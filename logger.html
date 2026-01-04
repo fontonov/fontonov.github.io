@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA5RP Logger</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --accent-light: #7aa2ff;
+            --text: #e6e6e6;
+            --text-secondary: #b0b0b0;
+            --success: #00ff6a;
+            --warning: #ffd23f;
+            --error: #ff4c4c;
+            --border: #2d3748;
+            --hover: #2a2a3e;
+            --card: #1e1e2e;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme {
+            --primary: #f8f9fa;
+            --secondary: #e9ecef;
+            --accent: #4361ee;
+            --accent-light: #4cc9f0;
+            --text: #212529;
+            --text-secondary: #6c757d;
+            --border: #dee2e6;
+            --hover: #e2e6ea;
+            --card: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: transparent;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app {
+            width: 1000px;
+            height: 600px;
+            background: var(--primary);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            left: 50px;
+            top: 50px;
+        }
+
+        /* Header */
+        .header {
+            height: 60px;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border);
+            -webkit-app-region: drag;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-light);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.5px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.off {
+            background: var(--error);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            -webkit-app-region: no-drag;
+        }
+
+        .header-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--hover);
+            border-color: var(--accent);
+        }
+
+        .header-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .header-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main Controls */
+        .main-controls {
+            height: 50px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--secondary);
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--hover);
+            border-color: var(--accent);
+        }
+
+        .control-btn.enabled {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .control-btn.enabled:hover {
+            background: #0d2b5a;
+        }
+
+        .control-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tabs {
+            flex: 1;
+            display: flex;
+            gap: 2px;
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            background: var(--primary);
+            color: var(--text-secondary);
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--text);
+            background: var(--hover);
+        }
+
+        .tab.active {
+            color: var(--accent-light);
+            border-bottom-color: var(--accent-light);
+            background: var(--hover);
+        }
+
+        .tab-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--accent);
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            animation: badgePulse 2s infinite;
+            z-index: 10;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Tab Controls */
+        .tab-controls {
+            height: 50px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--secondary);
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+            cursor: text;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .time-filter {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            min-width: 140px;
+        }
+
+        .time-filter:hover {
+            border-color: var(--accent);
+        }
+
+        .time-filter:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.1);
+        }
+
+        /* AutoScroll Button */
+        .autoscroll-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-left: 8px;
+        }
+
+        .autoscroll-btn:hover {
+            background: var(--hover);
+            border-color: var(--accent);
+        }
+
+        .autoscroll-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .autoscroll-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Log Container */
+        .log-container {
+            flex: 1;
+            background: var(--card);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            padding: 12px 20px;
+            background: var(--secondary);
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 80px 80px 80px 1fr;
+            gap: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .log-header > div {
+            cursor: default;
+        }
+
+        .log-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .log-entry {
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 80px 80px 80px 1fr 40px;
+            gap: 15px;
+            align-items: center;
+            cursor: default;
+            transition: all 0.3s ease;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+            opacity: 0;
+            transform: translateY(-5px);
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-entry:hover {
+            background: var(--hover);
+        }
+
+        .log-entry:hover .log-actions {
+            opacity: 1;
+        }
+
+        .log-time {
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: default;
+        }
+
+        .log-type {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            text-transform: uppercase;
+            min-width: 70px;
+            cursor: default;
+        }
+
+        .log-type-remote {
+            background: rgba(122, 182, 255, 0.1);
+            color: #7ab6ff;
+            border: 1px solid rgba(122, 182, 255, 0.3);
+        }
+
+        .log-type-rpc {
+            background: rgba(180, 140, 255, 0.1);
+            color: #b48cff;
+            border: 1px solid rgba(180, 140, 255, 0.3);
+        }
+
+        .log-type-browser {
+            background: rgba(199, 146, 234, 0.1);
+            color: #c792ea;
+            border: 1px solid rgba(199, 146, 234, 0.3);
+        }
+
+        .log-type-call {
+            background: rgba(255, 122, 122, 0.1);
+            color: #ff7a7a;
+            border: 1px solid rgba(255, 122, 122, 0.3);
+        }
+
+        .log-type-event {
+            background: rgba(76, 255, 216, 0.1);
+            color: #4cffd8;
+            border: 1px solid rgba(76, 255, 216, 0.3);
+        }
+
+        .log-subtype {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            text-transform: uppercase;
+            min-width: 70px;
+            cursor: default;
+        }
+
+        .log-subtype-empty {
+            background: rgba(176, 176, 176, 0.1);
+            color: #b0b0b0;
+            border: 1px solid rgba(176, 176, 176, 0.3);
+        }
+
+        .log-subtype-execute {
+            background: rgba(255, 179, 71, 0.1);
+            color: #ffb347;
+            border: 1px solid rgba(255, 179, 71, 0.3);
+        }
+
+        .log-subtype-client {
+            background: rgba(122, 182, 255, 0.1);
+            color: #7ab6ff;
+            border: 1px solid rgba(122, 182, 255, 0.3);
+        }
+
+        .log-subtype-server {
+            background: rgba(255, 122, 122, 0.1);
+            color: #ff7a7a;
+            border: 1px solid rgba(255, 122, 122, 0.3);
+        }
+
+        .log-subtype-call {
+            background: rgba(180, 140, 255, 0.1);
+            color: #b48cff;
+            border: 1px solid rgba(180, 140, 255, 0.3);
+        }
+
+        .log-subtype-proc {
+            background: rgba(76, 255, 216, 0.1);
+            color: #4cffd8;
+            border: 1px solid rgba(76, 255, 216, 0.3);
+        }
+
+        .log-text {
+            font-size: 13px;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: default;
+        }
+
+        .log-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .log-action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .log-action-btn:hover {
+            background: var(--hover);
+            border-color: var(--accent);
+        }
+
+        .log-action-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px var(--shadow);
+            z-index: 10000;
+            min-width: 180px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            animation: menuAppear 0.2s ease forwards;
+        }
+
+        @keyframes menuAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .context-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .context-item:hover {
+            background: var(--hover);
+        }
+
+        .context-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            z-index: 10001;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            height: 30px;
+            background: var(--secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            cursor: default;
+        }
+
+        /* Minimized State */
+        .minimized {
+            height: 60px !important;
+        }
+
+        .minimized .main-controls,
+        .minimized .tab-controls,
+        .minimized .log-container,
+        .minimized .footer {
+            display: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+            cursor: default;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 48 48" fill="currentColor">
+                        <path d="m5.56 12.59l-.003-3.34l20.284-.013l.003 3.747a8 8 0 0 0-1.694-.011c-.21.02-.42.05-.62.11a1.4 1.4 0 0 0-.55.298c-.221.2-.354.486-.4.78c-.046.293-.011.595.064.882q.099.376.284.715m.001 0l4.304 8.577a94 94 0 0 0 4.05-9.357l.016-.044q.022-.058.04-.118a1.26 1.26 0 0 0-.046-.847a1.43 1.43 0 0 0-.558-.65c-.229-.143-.493-.224-.761-.267s-.54-.05-.81-.056q-.713-.016-1.426-.024"/>
+                        <path d="m27.737 12.972l-.028-3.824l14.706-.102l.028 3.965l-2.195.015q-.09.007-.179.02c-.36.054-.703.19-1.017.369c-.601.342-1.1.84-1.511 1.39s-.744 1.157-1.067 1.762a97 97 0 0 0-2.849 5.79m.001.001l-7.683 16.596l-3.094-.053l-12.704-23.638a6 6 0 0 0-.412-.647a5.3 5.3 0 0 0-.574-.67a4.86 4.86 0 0 0-3.6-1.356"/>
+                    </svg>
+                    <span class="logo-text">Logger</span>
+                </div>
+                <div class="status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">LIVE</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" id="themeToggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+                <button class="header-btn" id="minimizeBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="main-controls">
+            <button class="control-btn" id="toggleBtn">
+                DISABLED
+            </button>
+            <button class="control-btn" id="clearBtn">
+                CLEAR
+            </button>
+            <button class="control-btn" id="exportBtn">
+                EXPORT
+            </button>
+            <div class="tabs">
+                <button class="tab active" data-tab="all">
+                    ALL
+                    <span class="tab-badge" id="badge-all" style="display: none;">0</span>
+                </button>
+                <button class="tab" data-tab="rpc">
+                    RPC
+                    <span class="tab-badge" id="badge-rpc" style="display: none;">0</span>
+                </button>
+                <button class="tab" data-tab="events">
+                    EVENTS
+                    <span class="tab-badge" id="badge-events" style="display: none;">0</span>
+                </button>
+                <button class="tab" data-tab="calls">
+                    CALL's
+                    <span class="tab-badge" id="badge-calls" style="display: none;">0</span>
+                </button>
+                <button class="tab" data-tab="browser">
+                    BROWSER
+                    <span class="tab-badge" id="badge-browser" style="display: none;">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Controls -->
+        <div class="tab-controls">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="Search logs...">
+            </div>
+            <div class="filter-controls">
+                <span class="filter-label">Time:</span>
+                <select class="time-filter" id="timeFilter">
+                    <option value="all">All Time</option>
+                    <option value="1min">Last 1 min</option>
+                    <option value="5min">Last 5 min</option>
+                    <option value="10min">Last 10 min</option>
+                </select>
+                <button class="autoscroll-btn active" id="autoscrollBtn" title="Auto Scroll">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Log Container -->
+        <div class="log-container">
+            <div class="log-header">
+                <div>TIME</div>
+                <div>TYPE</div>
+                <div>SUBTYPE</div>
+                <div>MESSAGE</div>
+            </div>
+            <div class="log-content" id="logContent">
+                <!-- Log entries will be added here -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            GTA5RP LOGGER
+        </div>
+
+        <!-- Context Menu -->
+        <div class="context-menu" id="contextMenu">
+            <div class="context-item" onclick="copyLog()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+                Copy Log
+            </div>
+            <div class="context-item" onclick="sendLog()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                Send Log
+            </div>
+            <div class="context-item" onclick="saveLog()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                    <path d="M17 21v-8H7v8M7 3v5h8"/>
+                </svg>
+                Save As...
+            </div>
+        </div>
+
+        <!-- Notification -->
+        <div class="notification" id="notification">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            <span>Log copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            enabled: false,
+            minimized: false,
+            theme: 'dark',
+            currentTab: 'all',
+            timeFilter: 'all',
+            autoScroll: true,
+            unreadCounts: {
+                all: 0,
+                rpc: 0,
+                events: 0,
+                calls: 0,
+                browser: 0
+            },
+            logs: {
+                all: [],
+                rpc: [],
+                events: [],
+                calls: [],
+                browser: []
+            },
+            dragging: false,
+            dragOffset: { x: 0, y: 0 },
+            contextMenuOpen: false,
+            autoTestInterval: null
+        };
+
+        // DOM Elements
+        const app = document.getElementById('app');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const themeToggle = document.getElementById('themeToggle');
+        const minimizeBtn = document.getElementById('minimizeBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const timeFilter = document.getElementById('timeFilter');
+        const autoscrollBtn = document.getElementById('autoscrollBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const logContent = document.getElementById('logContent');
+        const contextMenu = document.getElementById('contextMenu');
+        const notification = document.getElementById('notification');
+        const searchInput = document.querySelector('.search-input');
+
+        // Initialize
+        function init() {
+            updateStatus();
+            setupEventListeners();
+            setupDragAndDrop();
+            generateSampleLogs();
+            updateBadges();
+            startAutoTest();
+            updateAutoScrollButton();
+        }
+
+        // Setup drag and drop (без изменения курсора)
+        function setupDragAndDrop() {
+            const header = document.querySelector('.header');
+            
+            header.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', stopDrag);
+            
+            function startDrag(e) {
+                if (e.target.closest('.header-btn') || e.target.closest('.tab') || 
+                    e.target.closest('.control-btn') || e.target.closest('.time-filter') ||
+                    e.target.closest('.search-input') || e.target.closest('.autoscroll-btn')) {
+                    return; // Don't drag when clicking on buttons
+                }
+                
+                state.dragging = true;
+                const rect = app.getBoundingClientRect();
+                state.dragOffset.x = e.clientX - rect.left;
+                state.dragOffset.y = e.clientY - rect.top;
+                
+                app.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.4)';
+            }
+            
+            function doDrag(e) {
+                if (!state.dragging) return;
+                
+                e.preventDefault();
+                
+                let x = e.clientX - state.dragOffset.x;
+                let y = e.clientY - state.dragOffset.y;
+                
+                // Keep within viewport bounds
+                x = Math.max(0, Math.min(x, window.innerWidth - app.offsetWidth));
+                y = Math.max(0, Math.min(y, window.innerHeight - app.offsetHeight));
+                
+                app.style.left = x + 'px';
+                app.style.top = y + 'px';
+            }
+            
+            function stopDrag() {
+                state.dragging = false;
+                app.style.boxShadow = '0 10px 30px var(--shadow)';
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Minimize toggle
+            minimizeBtn.addEventListener('click', toggleMinimize);
+            
+            // Enable/disable toggle
+            toggleBtn.addEventListener('click', toggleEnabled);
+            
+            // Clear logs
+            clearBtn.addEventListener('click', clearLogs);
+            
+            // Export logs
+            exportBtn.addEventListener('click', exportLogs);
+            
+            // Time filter change
+            timeFilter.addEventListener('change', () => {
+                state.timeFilter = timeFilter.value;
+                displayLogs();
+            });
+            
+            // Auto scroll toggle
+            autoscrollBtn.addEventListener('click', toggleAutoScroll);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    switchTab(tab.dataset.tab);
+                });
+            });
+            
+            // Search
+            searchInput.addEventListener('input', filterLogs);
+            
+            // Close context menu on click outside
+            document.addEventListener('click', (e) => {
+                if (contextMenu && !contextMenu.contains(e.target) && 
+                    !e.target.closest('.log-action-btn')) {
+                    hideContextMenu();
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                // Keep app within bounds on resize
+                const rect = app.getBoundingClientRect();
+                if (rect.right > window.innerWidth || rect.bottom > window.innerHeight) {
+                    app.style.left = Math.max(0, Math.min(rect.left, window.innerWidth - app.offsetWidth)) + 'px';
+                    app.style.top = Math.max(0, Math.min(rect.top, window.innerHeight - app.offsetHeight)) + 'px';
+                }
+            });
+            
+            // Manual scroll detection
+            logContent.addEventListener('scroll', handleManualScroll);
+        }
+
+        // Toggle auto scroll
+        function toggleAutoScroll() {
+            state.autoScroll = !state.autoScroll;
+            updateAutoScrollButton();
+            
+            // If turning auto scroll back on, scroll to bottom
+            if (state.autoScroll) {
+                scrollToBottom();
+            }
+        }
+
+        // Update auto scroll button state
+        function updateAutoScrollButton() {
+            if (state.autoScroll) {
+                autoscrollBtn.classList.add('active');
+                autoscrollBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                `;
+                autoscrollBtn.title = "Auto Scroll: ON";
+            } else {
+                autoscrollBtn.classList.remove('active');
+                autoscrollBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                `;
+                autoscrollBtn.title = "Auto Scroll: OFF";
+            }
+        }
+
+        // Handle manual scroll
+        function handleManualScroll() {
+            const isAtBottom = logContent.scrollHeight - logContent.scrollTop <= logContent.clientHeight + 1;
+            
+            // If user manually scrolls away from bottom, turn off auto scroll
+            if (!isAtBottom && state.autoScroll) {
+                state.autoScroll = false;
+                updateAutoScrollButton();
+            }
+            
+            // If user scrolls back to bottom and auto scroll was previously on, turn it back on
+            if (isAtBottom && !state.autoScroll) {
+                state.autoScroll = true;
+                updateAutoScrollButton();
+            }
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            if (state.autoScroll) {
+                logContent.scrollTop = logContent.scrollHeight;
+            }
+        }
+
+        // Start auto test
+        function startAutoTest() {
+            if (state.autoTestInterval) {
+                clearInterval(state.autoTestInterval);
+            }
+            
+            state.autoTestInterval = setInterval(() => {
+                generateTestLog();
+            }, 2000);
+        }
+
+        // Update status display
+        function updateStatus() {
+            if (!state.enabled) {
+                statusDot.className = 'status-dot off';
+                statusText.textContent = 'OFF';
+                toggleBtn.textContent = 'DISABLED';
+                toggleBtn.classList.remove('enabled');
+            } else {
+                statusDot.className = 'status-dot';
+                statusText.textContent = 'LIVE';
+                toggleBtn.textContent = 'ENABLED';
+                toggleBtn.classList.add('enabled');
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            document.body.classList.toggle('light-theme', state.theme === 'light');
+            
+            // Update theme icon
+            const icon = themeToggle.querySelector('svg');
+            if (state.theme === 'light') {
+                icon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                `;
+            } else {
+                icon.innerHTML = `
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                `;
+            }
+        }
+
+        // Toggle minimize
+        function toggleMinimize() {
+            state.minimized = !state.minimized;
+            app.classList.toggle('minimized', state.minimized);
+            
+            // Update minimize icon
+            const icon = minimizeBtn.querySelector('svg');
+            if (state.minimized) {
+                icon.innerHTML = `<path d="M5 12h14"/>`;
+            } else {
+                icon.innerHTML = `<path d="M5 15h14"/>`;
+            }
+        }
+
+        // Toggle enabled state
+        function toggleEnabled() {
+            state.enabled = !state.enabled;
+            updateStatus();
+            mp.trigger('l:toggle');
+        }
+
+        // Switch tab
+        function switchTab(tab) {
+            state.currentTab = tab;
+            tabs.forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            // Reset unread count for this tab
+            state.unreadCounts[tab] = 0;
+            updateBadges();
+            displayLogs();
+            
+            // When switching tabs, scroll to bottom if auto scroll is on
+            if (state.autoScroll) {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 50);
+            }
+        }
+
+        // Update badge counts
+        function updateBadges() {
+            Object.keys(state.unreadCounts).forEach(tab => {
+                const badge = document.getElementById(`badge-${tab}`);
+                const count = state.unreadCounts[tab];
+                
+                if (badge) {
+                    if (count > 0 && state.currentTab !== tab) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Clear logs
+        function clearLogs() {
+            state.logs[state.currentTab] = [];
+            displayLogs();
+            mp.trigger('l:clear');
+        }
+
+        // Export logs
+        function exportLogs() {
+            const logs = getFilteredLogs();
+            const text = logs.map(log => log.original).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `logger_${state.currentTab}_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Get filtered logs based on time filter
+        function getFilteredLogs() {
+            const logs = state.logs[state.currentTab];
+            
+            if (state.timeFilter === 'all') {
+                return logs;
+            }
+            
+            const now = new Date();
+            let timeLimit;
+            
+            switch(state.timeFilter) {
+                case '1min':
+                    timeLimit = 60 * 1000; // 1 minute in milliseconds
+                    break;
+                case '5min':
+                    timeLimit = 5 * 60 * 1000; // 5 minutes
+                    break;
+                case '10min':
+                    timeLimit = 10 * 60 * 1000; // 10 minutes
+                    break;
+                default:
+                    return logs;
+            }
+            
+            return logs.filter(log => {
+                const logTime = new Date(log.timestamp);
+                return (now - logTime) <= timeLimit;
+            });
+        }
+
+        // Add log entry
+        function addLog(data) {
+            if (!state.enabled) return;
+            
+            const log = createLogEntry(data);
+            state.logs.all.push(log);
+            
+            // Map types to tabs
+            const typeToTabMap = {
+                'RPC': 'rpc',
+                'EVENT': 'events',
+                'CALL': 'calls',
+                'REMOTE': 'calls', // REMOTE goes to CALL's tab
+                'BROWSER': 'browser'
+            };
+            
+            const targetTab = typeToTabMap[data.type] || 'all';
+            
+            if (state.logs[targetTab]) {
+                state.logs[targetTab].push(log);
+            }
+            
+            // Update unread counts for inactive tabs
+            if (state.currentTab !== 'all') {
+                state.unreadCounts.all++;
+            }
+            if (targetTab !== 'all' && state.currentTab !== targetTab) {
+                state.unreadCounts[targetTab]++;
+            }
+            
+            updateBadges();
+            
+            if (state.currentTab === 'all' || state.currentTab === targetTab) {
+                displayLogs();
+            }
+        }
+
+        // Create log entry object
+        function createLogEntry(data) {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const type = data.type || 'REMOTE';
+            const subtype = data.subtype || '';
+            const text = data.text || '';
+            
+            const entry = {
+                time,
+                type,
+                subtype,
+                text,
+                original: `[${time}] [${type}] [${subtype}] ${text}`,
+                timestamp: now.getTime()
+            };
+            
+            return entry;
+        }
+
+        // Display logs
+        function displayLogs() {
+            const logs = getFilteredLogs();
+            logContent.innerHTML = '';
+            
+            logs.forEach((log, index) => {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.dataset.index = index;
+                entry.dataset.timestamp = log.timestamp;
+                
+                // Determine subtype class
+                const subtypeClass = log.subtype ? `log-subtype-${log.subtype.toLowerCase()}` : 'log-subtype-empty';
+                
+                entry.innerHTML = `
+                    <div class="log-time">${log.time}</div>
+                    <div class="log-type log-type-${log.type.toLowerCase()}">${log.type}</div>
+                    <div class="log-subtype ${subtypeClass}">${log.subtype || '—'}</div>
+                    <div class="log-text">${log.text}</div>
+                    <div class="log-actions">
+                        <button class="log-action-btn" onclick="event.stopPropagation(); toggleContextMenu(event, ${index})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="7" cy="12" r="1"/>
+                                <circle cx="12" cy="12" r="1"/>
+                                <circle cx="17" cy="12" r="1"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                // Double click to copy (only on log text area, not on buttons)
+                entry.addEventListener('dblclick', (e) => {
+                    if (!e.target.closest('.log-action-btn')) {
+                        copyLog(index);
+                        showNotification();
+                    }
+                });
+                
+                logContent.appendChild(entry);
+            });
+            
+            // Auto scroll to bottom if enabled
+            scrollToBottom();
+        }
+
+        // Filter logs
+        function filterLogs() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const entries = document.querySelectorAll('.log-entry');
+            
+            entries.forEach(entry => {
+                const text = entry.querySelector('.log-text').textContent.toLowerCase();
+                const type = entry.querySelector('.log-type').textContent.toLowerCase();
+                const subtype = entry.querySelector('.log-subtype').textContent.toLowerCase();
+                
+                const matches = text.includes(searchTerm) || 
+                              type.includes(searchTerm) || 
+                              subtype.includes(searchTerm);
+                
+                entry.style.display = matches ? 'grid' : 'none';
+            });
+        }
+
+        // Toggle context menu
+        function toggleContextMenu(event, index) {
+            event.stopPropagation();
+            
+            const button = event.target.closest('.log-action-btn');
+            
+            if (state.contextMenuOpen && contextMenu.dataset.selectedIndex == index) {
+                hideContextMenu();
+                return;
+            }
+            
+            // Close any open menu
+            hideContextMenu();
+            
+            // Mark button as active
+            button.classList.add('active');
+            
+            // Get position for context menu
+            const rect = button.getBoundingClientRect();
+            const x = rect.left;
+            const y = rect.bottom + 5;
+            
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+            contextMenu.dataset.selectedIndex = index;
+            
+            state.contextMenuOpen = true;
+        }
+
+        // Hide context menu
+        function hideContextMenu() {
+            contextMenu.style.display = 'none';
+            state.contextMenuOpen = false;
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.log-action-btn.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
+        // Copy log
+        function copyLog(index) {
+            const idx = index !== undefined ? index : contextMenu.dataset.selectedIndex;
+            const logs = getFilteredLogs();
+            const log = logs[idx];
+            navigator.clipboard.writeText(log.original).then(() => {
+                hideContextMenu();
+                showNotification();
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Send log
+        function sendLog() {
+            const index = contextMenu.dataset.selectedIndex;
+            const logs = getFilteredLogs();
+            const log = logs[index];
+            // Implement send functionality here
+            console.log('Sending log:', log);
+            hideContextMenu();
+            alert('Log sent! (This is a demo)');
+        }
+
+        // Save log
+        function saveLog() {
+            const index = contextMenu.dataset.selectedIndex;
+            const logs = getFilteredLogs();
+            const log = logs[index];
+            const blob = new Blob([log.original], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `log_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            hideContextMenu();
+        }
+
+        // Show notification
+        function showNotification() {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Generate test log
+        function generateTestLog() {
+            if (!state.enabled) return;
+            
+            const types = ['REMOTE', 'RPC', 'BROWSER', 'CALL', 'EVENT'];
+            const subtypes = ['', 'EXECUTE', 'CLIENT', 'SERVER', 'CALL', 'PROC'];
+            
+            const type = types[Math.floor(Math.random() * types.length)];
+            const subtype = subtypes[Math.floor(Math.random() * subtypes.length)];
+            
+            const messages = {
+                'REMOTE': [
+                    'Player connected: John_Doe (ID: 123)',
+                    'Player disconnected: Mike (ID: 456)',
+                    'Vehicle spawned: police1 at position x: 120, y: 240, z: 30',
+                    'Character saved: Slot 2 (Playtime: 45h 30m)',
+                    'Admin command: /tp 123 456 789 (Used by Admin_John)'
+                ],
+                'RPC': [
+                    'Bank transaction: Withdraw $500 from account #12345',
+                    'House purchased: 1234 Vinewood Blvd for $250,000',
+                    'Inventory updated: Added 5x Medkit, 2x Armor',
+                    'Money transfer: $1000 from Player1 to Player2',
+                    'Job completed: Delivery (Reward: $750)'
+                ],
+                'BROWSER': [
+                    'Browser loaded: https://bank.gta5rp.com/login',
+                    'JavaScript executed: updateBalance()',
+                    'Page navigation: /dashboard -> /inventory',
+                    'Resource loaded: script.js (Size: 45KB)',
+                    'Browser closed: banking application'
+                ],
+                'CALL': [
+                    'Native call: GET_PLAYER_PED (PlayerID: 123)',
+                    'Native call: GET_VEHICLE_ENGINE_HEALTH (Vehicle: police1)',
+                    'Function call: calculateDamage(weapon: pistol, distance: 15m)',
+                    'Procedure call: updateInventory(playerID: 123)',
+                    'Callback: onPlayerDeath(player: 123, killer: 456)'
+                ],
+                'EVENT': [
+                    'Police arrested player: Mike (Wanted level: 3)',
+                    'Phone call started: Number: 555-1234, Duration: 2:30',
+                    'Weather changed: Rain intensity: 0.8, Wind: 15 mph',
+                    'Mission started: Heist: Pacific Standard',
+                    'Chat message: [John_Doe]: Anyone want to team up?',
+                    'Weapon equipped: weapon_assaultrifle (Ammo: 240)',
+                    'Clothing changed: Outfit #3 (Premium)',
+                    'Vehicle modified: Added turbo, upgraded engine',
+                    'Property entered: 24/7 Store (ID: 45)',
+                    'Radio changed: Station: Los Santos Rock Radio'
+                ]
+            };
+            
+            const text = messages[type][Math.floor(Math.random() * messages[type].length)];
+            
+            addLog({
+                type: type,
+                subtype: subtype,
+                text: text
+            });
+        }
+
+        // Generate sample logs for demonstration
+        function generateSampleLogs() {
+            // Add a few sample logs initially
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    generateTestLog();
+                }, i * 100);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
