@@ -64,7 +64,6 @@
             top: 50px;
         }
 
-        /* Header */
         .header {
             height: 60px;
             background: var(--secondary);
@@ -462,7 +461,7 @@
             background: var(--secondary);
             border-bottom: 1px solid var(--border);
             display: grid;
-            grid-template-columns: 80px 80px 80px 1fr;
+            grid-template-columns: 80px 80px 80px 1fr 200px;
             gap: 15px;
             font-size: 12px;
             font-weight: 600;
@@ -485,27 +484,12 @@
             padding: 10px 20px;
             border-bottom: 1px solid var(--border);
             display: grid;
-            grid-template-columns: 80px 80px 80px 1fr 40px;
+            grid-template-columns: 80px 80px 80px 1fr 200px 40px;
             gap: 15px;
             align-items: center;
             cursor: default;
             transition: all 0.3s ease;
             position: relative;
-            animation: slideIn 0.3s ease-out;
-            opacity: 0;
-            transform: translateY(-5px);
-            animation-fill-mode: forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .log-entry:hover {
@@ -548,6 +532,16 @@
         .log-text {
             font-size: 13px;
             color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: default;
+        }
+
+        .log-arguments {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'Consolas', monospace;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -629,6 +623,75 @@
             width: 16px;
             height: 16px;
             color: var(--text-secondary);
+        }
+
+        .context-item.delete-item {
+            color: var(--error);
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            padding-top: 12px;
+        }
+
+        .context-item.delete-item:hover {
+            background: rgba(255, 76, 76, 0.1);
+        }
+
+        .context-item.delete-item svg {
+            color: var(--error);
+        }
+
+        .context-item.ignore-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            padding-top: 12px;
+            gap: 10px;
+        }
+
+        .context-item.ignore-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .context-item.ignore-item span {
+            flex: 1;
+        }
+
+        .nop-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .nop-checkbox.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .nop-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .log-entry.nop-blocked {
+            opacity: 0.35;
+        }
+
+        .log-entry.nop-blocked:hover {
+            opacity: 0.5;
         }
 
         .notification {
@@ -802,6 +865,7 @@
                 <div>TYPE</div>
                 <div>SUBTYPE</div>
                 <div>MESSAGE</div>
+                <div>ARGUMENTS</div>
             </div>
             <div class="log-content" id="logContent">
                 
@@ -825,13 +889,6 @@
                     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                 </svg>
                 Send RPC
-            </div>
-            <div class="context-item" onclick="saveLog()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                    <path d="M17 21v-8H7v8M7 3v5h8"/>
-                </svg>
-                Save As...
             </div>
         </div>
 
@@ -876,7 +933,8 @@
             dragging: false,
             dragOffset: { x: 0, y: 0 },
             contextMenuOpen: false,
-            selectedLogIndex: null
+            selectedLogIndex: null,
+            nopList: []
         };
 
         const app = document.getElementById('app');
@@ -904,7 +962,6 @@
                 }
             });
 
-            // Добавляем тестовые логи йцуфвяч
             state.enabled = true;
             updateStatus();
             
@@ -1007,7 +1064,6 @@
         }
 
         function dispatchStateChange(key, value) {
-            // Отправляем событие для RAGE MP
             if (typeof mp !== 'undefined') {
                 if (mp.trigger) {
                     mp.trigger('loggerStateChange', key, value);
@@ -1017,7 +1073,6 @@
                 }
             }
             
-            // Также отправляем обычное браузерное событие для совместимости
             const event = new CustomEvent('loggerStateChange', {
                 detail: { key, value }
             });
@@ -1059,6 +1114,40 @@
         function addLog(data) {
             if (!state.enabled) return;
             
+            const type = (data.type || 'REMOTE').toUpperCase();
+            const subtype = (data.subtype || '').toUpperCase();
+            const text = data.text || '';
+            const arguments = data.arguments || '';
+            
+            if (type !== 'EVENT' && isNopBlocked(type, subtype, text, arguments)) {
+                const log = createLogEntry(data);
+                log.nopBlocked = true;
+                state.logs.all.push(log);
+                
+                const targetTab = {
+                    'RPC': 'rpc',
+                    'EVENT': 'events',
+                    'CALL': 'calls',
+                    'REMOTE': 'calls',
+                    'BROWSER': 'browser'
+                }[type] || 'all';
+                
+                if (state.logs[targetTab]) {
+                    state.logs[targetTab].push(log);
+                }
+                
+                if (state.currentTab !== 'all') state.unreadCounts.all++;
+                if (targetTab !== 'all' && state.currentTab !== targetTab) {
+                    state.unreadCounts[targetTab]++;
+                }
+                
+                updateBadges();
+                if (state.currentTab === 'all' || state.currentTab === targetTab) {
+                    displayLogs();
+                }
+                return;
+            }
+            
             const log = createLogEntry(data);
             state.logs.all.push(log);
             
@@ -1068,7 +1157,7 @@
                 'CALL': 'calls',
                 'REMOTE': 'calls',
                 'BROWSER': 'browser'
-            }[data.type] || 'all';
+            }[type] || 'all';
             
             if (state.logs[targetTab]) {
                 state.logs[targetTab].push(log);
@@ -1103,6 +1192,7 @@
             const type = (data.type || 'REMOTE').toUpperCase();
             const subtype = (data.subtype || '').toUpperCase();
             const text = data.text || '';
+            const arguments = data.arguments || '';
             
             const typeLower = type.toLowerCase();
             const subtypeLower = subtype.toLowerCase();
@@ -1115,7 +1205,8 @@
                 type,
                 subtype,
                 text,
-                original: `[${time}] [${type}] [${subtype}] ${text}`,
+                arguments,
+                original: `[${time}] [${type}] [${subtype}] ${text}${arguments ? ' ' + arguments : ''}`,
                 timestamp: now.getTime(),
                 typeColor,
                 subtypeColor
@@ -1127,8 +1218,9 @@
             logContent.innerHTML = '';
             
             logs.forEach((log, index) => {
+                const isNop = log.nopBlocked || (log.type !== 'EVENT' && isNopBlocked(log.type, log.subtype, log.text, log.arguments));
                 const entry = document.createElement('div');
-                entry.className = 'log-entry';
+                entry.className = isNop ? 'log-entry nop-blocked' : 'log-entry';
                 entry.dataset.index = index;
                 
                 entry.innerHTML = `
@@ -1136,6 +1228,7 @@
                     <div class="log-type" style="background: ${escapeHtml(log.typeColor.bg)}; border-color: ${escapeHtml(log.typeColor.border)}; color: ${escapeHtml(log.typeColor.text)}">${escapeHtml(log.type)}</div>
                     <div class="log-subtype" style="background: ${escapeHtml(log.subtypeColor.bg)}; border-color: ${escapeHtml(log.subtypeColor.border)}; color: ${escapeHtml(log.subtypeColor.text)}">${escapeHtml(log.subtype || '—')}</div>
                     <div class="log-text">${escapeHtml(log.text)}</div>
+                    <div class="log-arguments">${escapeHtml(log.arguments || '—')}</div>
                     <div class="log-actions">
                         <button class="log-action-btn" onclick="event.stopPropagation(); showContextMenu(event, ${index})">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1168,7 +1261,6 @@
         function getFilteredLogs() {
             let logs = state.logs[state.currentTab] || [];
             
-            // Фильтр по времени
             if (state.timeFilter !== 'all') {
                 const now = Date.now();
                 let timeLimit = 0;
@@ -1180,10 +1272,15 @@
                     default: break;
                 }
                 
-                logs = logs.filter(log => (now - log.timestamp) <= timeLimit);
+                if (timeLimit > 0) {
+                    logs = logs.filter(log => {
+                        if (!log.timestamp) return false;
+                        const timeDiff = now - log.timestamp;
+                        return timeDiff >= 0 && timeDiff <= timeLimit;
+                    });
+                }
             }
             
-            // Фильтр по поиску
             if (state.searchTerm) {
                 const searchLower = state.searchTerm.toLowerCase();
                 logs = logs.filter(log => {
@@ -1212,14 +1309,14 @@
 
         function clearLogs() {
             if (state.currentTab === 'all') {
-                // Очищаем все логи
                 Object.keys(state.logs).forEach(key => {
                     state.logs[key] = [];
                 });
+                Object.keys(state.unreadCounts).forEach(tab => {
+                    state.unreadCounts[tab] = 0;
+                });
             } else {
-                // Очищаем только текущую вкладку
                 state.logs[state.currentTab] = [];
-                // Также удаляем эти логи из all
                 state.logs.all = state.logs.all.filter(log => {
                     const targetTab = {
                         'RPC': 'rpc',
@@ -1230,52 +1327,21 @@
                     }[log.type] || 'all';
                     return targetTab !== state.currentTab;
                 });
+                state.unreadCounts[state.currentTab] = 0;
             }
+            updateBadges();
             displayLogs();
         }
 
         function exportLogs() {
             const logs = getFilteredLogs();
             const text = logs.map(log => log.original).join('\n');
-            const filename = `logger_${state.currentTab}_${Date.now()}.txt`;
             
-            // Создаем blob и получаем ссылку на файл
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            
-            // В RAGE MP CEF используем специальный API для скачивания
-            if (typeof mp !== 'undefined' && mp.trigger) {
-                // Отправляем данные на клиентскую сторону для сохранения
-                mp.trigger('loggerExport', filename, text, url);
-                
-                // Копируем ссылку в буфер обмена
-                copyToClipboard(url).then(() => {
-                    showNotification('File link copied to clipboard!');
-                }).catch(() => {
-                    showNotification('Exporting logs...');
-                });
-            } else {
-                // Обычный браузер - используем стандартный метод скачивания
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                // Также копируем ссылку в буфер обмена
-                copyToClipboard(url).then(() => {
-                    showNotification('File downloaded! Link copied to clipboard.');
-                }).catch(() => {
-                    showNotification('File downloaded!');
-                });
-                
-                // Освобождаем память через некоторое время
-                setTimeout(() => {
-                    URL.revokeObjectURL(url);
-                }, 1000);
-            }
+            copyToClipboard(text).then(() => {
+                showNotification('All logs copied to clipboard!');
+            }).catch(() => {
+                showNotification('Failed to copy logs!');
+            });
         }
 
         function toggleTheme() {
@@ -1375,6 +1441,61 @@
             state.contextMenuOpen = true;
             state.selectedLogIndex = index;
             
+            const logs = getFilteredLogs();
+            const log = logs[index];
+            if (!log) return;
+            
+            contextMenu.innerHTML = '';
+            
+            const copyItem = document.createElement('div');
+            copyItem.className = 'context-item';
+            copyItem.onclick = () => copyLog(index);
+            copyItem.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+                Copy Log
+            `;
+            contextMenu.appendChild(copyItem);
+            
+            const sendItem = document.createElement('div');
+            sendItem.className = 'context-item';
+            sendItem.onclick = sendLog;
+            sendItem.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                Send RPC
+            `;
+            contextMenu.appendChild(sendItem);
+            
+            if (log.type === 'EVENT') {
+                const deleteItem = document.createElement('div');
+                deleteItem.className = 'context-item delete-item';
+                deleteItem.onclick = () => deleteEvent(index);
+                deleteItem.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    Delete
+                `;
+                contextMenu.appendChild(deleteItem);
+            } else {
+                const isNop = isNopBlocked(log.type, log.subtype, log.text, log.arguments);
+                const ignoreItem = document.createElement('div');
+                ignoreItem.className = 'context-item ignore-item';
+                ignoreItem.onclick = () => toggleNop(index);
+                ignoreItem.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                    <span>Ignore</span>
+                    <div class="nop-checkbox ${isNop ? 'checked' : ''}"></div>
+                `;
+                contextMenu.appendChild(ignoreItem);
+            }
+            
             contextMenu.style.left = event.pageX + 'px';
             contextMenu.style.top = event.pageY + 'px';
             contextMenu.classList.add('show');
@@ -1384,14 +1505,11 @@
         }
 
         function copyToClipboard(text) {
-            // Метод 1: Используем Clipboard API (если доступен)
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 return navigator.clipboard.writeText(text).catch(() => {
-                    // Если Clipboard API не работает, используем fallback
                     return fallbackCopyToClipboard(text);
                 });
             } else {
-                // Метод 2: Fallback для CEF и старых браузеров
                 return fallbackCopyToClipboard(text);
             }
         }
@@ -1399,7 +1517,6 @@
         function fallbackCopyToClipboard(text) {
             return new Promise((resolve, reject) => {
                 try {
-                    // Создаем временный textarea элемент
                     const textArea = document.createElement('textarea');
                     textArea.value = text;
                     textArea.style.position = 'fixed';
@@ -1408,11 +1525,9 @@
                     textArea.style.opacity = '0';
                     document.body.appendChild(textArea);
                     
-                    // Выбираем текст
                     textArea.select();
-                    textArea.setSelectionRange(0, 99999); // Для мобильных устройств
+                    textArea.setSelectionRange(0, 99999);
                     
-                    // Копируем
                     const successful = document.execCommand('copy');
                     document.body.removeChild(textArea);
                     
@@ -1429,7 +1544,10 @@
 
         function copyLog(index = null) {
             const contextMenu = document.getElementById('contextMenu');
-            const idx = index !== null ? index : parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
+            let idx = index;
+            if (idx === null) {
+                idx = parseInt(contextMenu?.dataset.selectedIndex || '-1', 10);
+            }
             const logs = getFilteredLogs();
             const log = logs[idx];
             if (log) {
@@ -1438,6 +1556,8 @@
                 }).catch(() => {
                     showNotification('Failed to copy log!');
                 });
+            } else {
+                showNotification('Log not found!');
             }
             closeContextMenu();
         }
@@ -1448,27 +1568,77 @@
             const logs = getFilteredLogs();
             const log = logs[idx];
             if (log) {
-                // Здесь можно добавить логику отправки RPC
                 showNotification('RPC send functionality not implemented');
             }
             closeContextMenu();
         }
 
-        function saveLog() {
-            const contextMenu = document.getElementById('contextMenu');
-            const idx = parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
+        function isNopBlocked(type, subtype, message, arguments) {
+            return state.nopList.some(nop => 
+                nop.type === type && 
+                nop.subtype === subtype && 
+                nop.message === message &&
+                nop.arguments === (arguments || '')
+            );
+        }
+
+        function toggleNop(index) {
             const logs = getFilteredLogs();
-            const log = logs[idx];
-            if (log) {
-                const blob = new Blob([log.original], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `log_${Date.now()}.txt`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showNotification('Log saved!');
+            const log = logs[index];
+            if (!log) {
+                closeContextMenu();
+                return;
             }
+            
+            const type = log.type;
+            const subtype = log.subtype || '';
+            const message = log.text;
+            const arguments = log.arguments || '';
+            
+            const existingIndex = state.nopList.findIndex(nop => 
+                nop.type === type && 
+                nop.subtype === subtype && 
+                nop.message === message &&
+                nop.arguments === arguments
+            );
+            
+            if (existingIndex !== -1) {
+                state.nopList.splice(existingIndex, 1);
+                
+                if (typeof mp !== 'undefined' && mp.trigger) {
+                    mp.trigger('disableNopEvent', type, subtype, message, arguments);
+                }
+                
+                showNotification('Ignore disabled');
+            } else {
+                state.nopList.push({ type, subtype, message, arguments });
+                
+                if (typeof mp !== 'undefined' && mp.trigger) {
+                    mp.trigger('nopEvent', type, subtype, message, arguments);
+                }
+                
+                showNotification('Ignore enabled');
+            }
+            
+            displayLogs();
+            closeContextMenu();
+        }
+
+        function deleteEvent(index) {
+            const logs = getFilteredLogs();
+            const log = logs[index];
+            if (!log || log.type !== 'EVENT') {
+                closeContextMenu();
+                return;
+            }
+            
+            const message = log.text;
+            
+            if (typeof mp !== 'undefined' && mp.trigger) {
+                mp.trigger('deleteEvent', message);
+            }
+            
+            showNotification('Event deleted');
             closeContextMenu();
         }
 
