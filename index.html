@@ -1237,13 +1237,45 @@
         function exportLogs() {
             const logs = getFilteredLogs();
             const text = logs.map(log => log.original).join('\n');
+            const filename = `logger_${state.currentTab}_${Date.now()}.txt`;
+            
+            // Создаем blob и получаем ссылку на файл
             const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `logger_${state.currentTab}_${Date.now()}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
+            
+            // В RAGE MP CEF используем специальный API для скачивания
+            if (typeof mp !== 'undefined' && mp.trigger) {
+                // Отправляем данные на клиентскую сторону для сохранения
+                mp.trigger('loggerExport', filename, text, url);
+                
+                // Копируем ссылку в буфер обмена
+                copyToClipboard(url).then(() => {
+                    showNotification('File link copied to clipboard!');
+                }).catch(() => {
+                    showNotification('Exporting logs...');
+                });
+            } else {
+                // Обычный браузер - используем стандартный метод скачивания
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Также копируем ссылку в буфер обмена
+                copyToClipboard(url).then(() => {
+                    showNotification('File downloaded! Link copied to clipboard.');
+                }).catch(() => {
+                    showNotification('File downloaded!');
+                });
+                
+                // Освобождаем память через некоторое время
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 1000);
+            }
         }
 
         function toggleTheme() {
