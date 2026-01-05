@@ -164,7 +164,6 @@
             height: 16px;
         }
 
-        /* Main Controls */
         .main-controls {
             height: 50px;
             padding: 0 20px;
@@ -267,7 +266,6 @@
             50% { transform: scale(1.1); opacity: 0.8; }
         }
 
-        /* Tab Controls */
         .tab-controls {
             height: 50px;
             padding: 0 20px;
@@ -324,7 +322,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Кастомный фильтр времени */
         .custom-time-filter {
             position: relative;
             width: 140px;
@@ -420,48 +417,7 @@
             background: var(--accent);
             color: white;
         }
-        
-        /* Дополнительные опции времени */
-        .time-custom-input {
-            padding: 8px 12px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            border-top: 1px solid var(--border);
-        }
-        
-        .time-custom-input input {
-            flex: 1;
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            background: var(--primary);
-            color: var(--text);
-            font-size: 12px;
-            outline: none;
-        }
-        
-        .time-custom-input input:focus {
-            border-color: var(--accent);
-        }
-        
-        .time-custom-input button {
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            background: var(--primary);
-            color: var(--text);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .time-custom-input button:hover {
-            background: var(--hover);
-            border-color: var(--accent);
-        }
 
-        /* AutoScroll Button */
         .autoscroll-btn {
             width: 32px;
             height: 32px;
@@ -489,11 +445,10 @@
         }
 
         .autoscroll-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 21px;
+            height: 21px;
         }
 
-        /* Log Container */
         .log-container {
             flex: 1;
             background: var(--card);
@@ -628,7 +583,6 @@
             border-color: var(--accent);
         }
 
-        /* Context Menu */
         .context-menu {
             position: fixed;
             background: var(--card);
@@ -677,7 +631,6 @@
             color: var(--text-secondary);
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             bottom: 20px;
@@ -704,7 +657,6 @@
             height: 20px;
         }
 
-        /* Footer */
         .footer {
             height: 30px;
             background: var(--secondary);
@@ -718,7 +670,6 @@
             cursor: default;
         }
 
-        /* Minimized State */
         .minimized {
             height: 60px !important;
         }
@@ -730,7 +681,6 @@
             display: none;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -752,7 +702,6 @@
 </head>
 <body>
     <div id="app">
-        <!-- Header -->
         <div class="header">
             <div class="header-left">
                 <div class="logo">
@@ -782,7 +731,6 @@
             </div>
         </div>
 
-        <!-- Main Controls -->
         <div class="main-controls">
             <button class="control-btn" id="toggleBtn">
                 DISABLED
@@ -817,7 +765,6 @@
             </div>
         </div>
 
-        <!-- Tab Controls -->
         <div class="tab-controls">
             <div class="search-box">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -829,7 +776,6 @@
             <div class="filter-controls">
                 <span class="filter-label">Time:</span>
                 
-                <!-- Кастомный фильтр времени -->
                 <div class="custom-time-filter" id="customTimeFilter">
                     <button class="time-filter-button" id="timeFilterButton">
                         <span class="time-filter-label">All Time</span>
@@ -841,26 +787,15 @@
                         <div class="time-filter-option active" data-value="all">All Time</div>
                         <div class="time-filter-option" data-value="1min">Last 1 minute</div>
                         <div class="time-filter-option" data-value="5min">Last 5 minutes</div>
-                        <div class="time-filter-option" data-value="10min">Last 10 minutes</div>
-                        <div class="time-filter-option" data-value="30min">Last 30 minutes</div>
-                        <div class="time-filter-option" data-value="1hour">Last 1 hour</div>
-                        <div class="time-filter-option" data-value="today">Today</div>
-                        <div class="time-custom-input">
-                            <input type="number" id="customTimeInput" placeholder="Minutes" min="1" max="1440">
-                            <button id="applyCustomTime">Apply</button>
-                        </div>
+                        <div class="time-filter-option" data-value="10min">Last 10 minutes</div> 
                     </div>
                 </div>
                 
                 <button class="autoscroll-btn active" id="autoscrollBtn" title="Auto Scroll">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                    </svg>
                 </button>
             </div>
         </div>
 
-        <!-- Log Container -->
         <div class="log-container">
             <div class="log-header">
                 <div>TIME</div>
@@ -869,16 +804,14 @@
                 <div>MESSAGE</div>
             </div>
             <div class="log-content" id="logContent">
-                <!-- Log entries will be added here -->
+                
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
             GTA5RP LOGGER
         </div>
-
-        <!-- Context Menu -->
+        
         <div class="context-menu" id="contextMenu">
             <div class="context-item" onclick="copyLog()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -891,7 +824,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                 </svg>
-                Send Log
+                Send RPC
             </div>
             <div class="context-item" onclick="saveLog()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -902,7 +835,7 @@
             </div>
         </div>
 
-        <!-- Notification -->
+        
         <div class="notification" id="notification">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 6L9 17l-5-5"/>
@@ -910,9 +843,8 @@
             <span>Log copied to clipboard!</span>
         </div>
     </div>
-
-    <script>
-        // Конфигурация по умолчанию
+        <script>
+        
         const defaultConfig = {
             enabled: false,
             theme: 'dark',
@@ -922,7 +854,6 @@
                 browser: { bg: '#c792ea20', border: '#c792ea4D', text: '#c792ea' },
                 call: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' },
                 event: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
-                
                 subtypes: {
                     '': { bg: '#b0b0b020', border: '#b0b0b04D', text: '#b0b0b0' },
                     execute: { bg: '#ffb34720', border: '#ffb3474D', text: '#ffb347' },
@@ -936,29 +867,16 @@
             }
         };
 
-        // State management
+        
         let state = {
             enabled: false,
             minimized: false,
             theme: 'dark',
             currentTab: 'all',
             timeFilter: 'all',
-            timeFilterMinutes: null,
-            autoScroll: true,
-            unreadCounts: {
-                all: 0,
-                rpc: 0,
-                events: 0,
-                calls: 0,
-                browser: 0
-            },
-            logs: {
-                all: [],
-                rpc: [],
-                events: [],
-                calls: [],
-                browser: []
-            },
+            autoScroll: false,
+            unreadCounts: { all: 0, rpc: 0, events: 0, calls: 0, browser: 0 },
+            logs: { all: [], rpc: [], events: [], calls: [], browser: [] },
             dragging: false,
             dragOffset: { x: 0, y: 0 },
             contextMenuOpen: false,
@@ -966,31 +884,17 @@
             config: { ...defaultConfig }
         };
 
-        // DOM Elements
         const app = document.getElementById('app');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
-        const themeToggle = document.getElementById('themeToggle');
-        const minimizeBtn = document.getElementById('minimizeBtn');
         const toggleBtn = document.getElementById('toggleBtn');
         const clearBtn = document.getElementById('clearBtn');
         const exportBtn = document.getElementById('exportBtn');
         const autoscrollBtn = document.getElementById('autoscrollBtn');
         const tabs = document.querySelectorAll('.tab');
         const logContent = document.getElementById('logContent');
-        const contextMenu = document.getElementById('contextMenu');
-        const notification = document.getElementById('notification');
         const searchInput = document.querySelector('.search-input');
         
-        // Элементы для кастомного фильтра
-        const timeFilterButton = document.getElementById('timeFilterButton');
-        const timeFilterLabel = timeFilterButton.querySelector('.time-filter-label');
-        const timeFilterDropdown = document.getElementById('timeFilterDropdown');
-        const timeFilterOptions = document.querySelectorAll('.time-filter-option');
-        const customTimeInput = document.getElementById('customTimeInput');
-        const applyCustomTimeBtn = document.getElementById('applyCustomTime');
-
-        // Initialize
         function init() {
             updateStatus();
             setupEventListeners();
@@ -1000,153 +904,81 @@
             updateAutoScrollButton();
         }
 
-        // Setup drag and drop
         function setupDragAndDrop() {
             const header = document.querySelector('.header');
-            
-            header.addEventListener('mousedown', startDrag);
-            document.addEventListener('mousemove', doDrag);
-            document.addEventListener('mouseup', stopDrag);
-            
-            function startDrag(e) {
+
+            header.addEventListener('mousedown', (e) => {
                 if (e.target.closest('.header-btn') || e.target.closest('.tab') || 
-                    e.target.closest('.control-btn') || e.target.closest('.time-filter') ||
-                    e.target.closest('.search-input') || e.target.closest('.autoscroll-btn')) {
-                    return;
-                }
+                    e.target.closest('.control-btn')) return;
                 
                 state.dragging = true;
                 const rect = app.getBoundingClientRect();
                 state.dragOffset.x = e.clientX - rect.left;
                 state.dragOffset.y = e.clientY - rect.top;
-                
                 app.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.4)';
-            }
+            });
             
-            function doDrag(e) {
+            document.addEventListener('mousemove', (e) => {
                 if (!state.dragging) return;
-                
                 e.preventDefault();
                 
                 let x = e.clientX - state.dragOffset.x;
                 let y = e.clientY - state.dragOffset.y;
                 
-                // Keep within viewport bounds
                 x = Math.max(0, Math.min(x, window.innerWidth - app.offsetWidth));
                 y = Math.max(0, Math.min(y, window.innerHeight - app.offsetHeight));
                 
                 app.style.left = x + 'px';
                 app.style.top = y + 'px';
-            }
+            });
             
-            function stopDrag() {
+            document.addEventListener('mouseup', () => {
                 state.dragging = false;
                 app.style.boxShadow = '0 10px 30px var(--shadow)';
-            }
+            });
         }
-
-        // Настройка кастомного фильтра времени
+        
         function setupTimeFilter() {
-            // Открытие/закрытие выпадающего меню
+            const timeFilterButton = document.getElementById('timeFilterButton');
+            const timeFilterDropdown = document.getElementById('timeFilterDropdown');
+            const timeFilterOptions = document.querySelectorAll('.time-filter-option');
+            
             timeFilterButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 timeFilterDropdown.classList.toggle('show');
                 timeFilterButton.classList.toggle('active');
             });
             
-            // Выбор опции
             timeFilterOptions.forEach(option => {
                 option.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const value = option.dataset.value;
-                    const label = option.textContent;
                     
-                    // Снимаем активный класс со всех опций
                     timeFilterOptions.forEach(opt => opt.classList.remove('active'));
-                    // Добавляем активный класс выбранной опции
                     option.classList.add('active');
                     
-                    // Обновляем состояние
                     state.timeFilter = value;
-                    state.timeFilterMinutes = null;
-                    
-                    // Обновляем кнопку
-                    timeFilterLabel.textContent = label;
-                    timeFilterButton.classList.remove('active');
-                    
-                    // Закрываем меню
+                    timeFilterButton.querySelector('.time-filter-label').textContent = option.textContent;
                     timeFilterDropdown.classList.remove('show');
-                    
-                    // Применяем фильтр
+                    timeFilterButton.classList.remove('active');
                     displayLogs();
                 });
             });
             
-            // Применение кастомного времени
-            applyCustomTimeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const minutes = parseInt(customTimeInput.value);
-                
-                if (minutes && minutes > 0 && minutes <= 1440) {
-                    // Снимаем активный класс со всех опций
-                    timeFilterOptions.forEach(opt => opt.classList.remove('active'));
-                    
-                    // Обновляем состояние
-                    state.timeFilter = 'custom';
-                    state.timeFilterMinutes = minutes;
-                    
-                    // Обновляем кнопку
-                    timeFilterLabel.textContent = `Last ${minutes} min`;
-                    timeFilterButton.classList.remove('active');
-                    
-                    // Закрываем меню
-                    timeFilterDropdown.classList.remove('show');
-                    
-                    // Очищаем поле ввода
-                    customTimeInput.value = '';
-                    
-                    // Применяем фильтр
-                    displayLogs();
-                }
-            });
-            
-            // Закрытие меню при клике вне его
-            document.addEventListener('click', (e) => {
-                if (!timeFilterButton.contains(e.target) && !timeFilterDropdown.contains(e.target)) {
-                    timeFilterDropdown.classList.remove('show');
-                    timeFilterButton.classList.remove('active');
-                }
-            });
-            
-            // Обработка Enter в поле ввода
-            customTimeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    applyCustomTimeBtn.click();
-                }
+            document.addEventListener('click', () => {
+                timeFilterDropdown.classList.remove('show');
+                timeFilterButton.classList.remove('active');
             });
         }
 
-        // Setup event listeners
         function setupEventListeners() {
-            // Theme toggle
-            themeToggle.addEventListener('click', toggleTheme);
-            
-            // Minimize toggle
-            minimizeBtn.addEventListener('click', toggleMinimize);
-            
-            // Enable/disable toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('minimizeBtn').addEventListener('click', toggleMinimize);
             toggleBtn.addEventListener('click', toggleEnabled);
-            
-            // Clear logs
             clearBtn.addEventListener('click', clearLogs);
-            
-            // Export logs
             exportBtn.addEventListener('click', exportLogs);
-            
-            // Auto scroll toggle
             autoscrollBtn.addEventListener('click', toggleAutoScroll);
             
-            // Tab switching
             tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1154,91 +986,15 @@
                 });
             });
             
-            // Search
             searchInput.addEventListener('input', filterLogs);
-            
-            // Close context menu on click outside
-            document.addEventListener('click', (e) => {
-                if (contextMenu.classList.contains('show') && !contextMenu.contains(e.target)) {
-                    hideContextMenu();
-                }
-            });
-            
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                const rect = app.getBoundingClientRect();
-                if (rect.right > window.innerWidth || rect.bottom > window.innerHeight) {
-                    app.style.left = Math.max(0, Math.min(rect.left, window.innerWidth - app.offsetWidth)) + 'px';
-                    app.style.top = Math.max(0, Math.min(rect.top, window.innerHeight - app.offsetHeight)) + 'px';
-                }
-            });
-            
-            // Manual scroll detection
             logContent.addEventListener('scroll', handleManualScroll);
-            
-            // Prevent default context menu
-            app.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-            });
         }
 
-        // Toggle auto scroll
-        function toggleAutoScroll() {
-            state.autoScroll = !state.autoScroll;
-            updateAutoScrollButton();
-            
-            if (state.autoScroll) {
-                scrollToBottom();
-            }
+        function toggleEnabled() {
+            state.enabled = !state.enabled;
+            updateStatus();
         }
 
-        // Update auto scroll button state
-        function updateAutoScrollButton() {
-            if (state.autoScroll) {
-                autoscrollBtn.classList.add('active');
-                autoscrollBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                    </svg>
-                `;
-                autoscrollBtn.title = "Auto Scroll: ON";
-            } else {
-                autoscrollBtn.classList.remove('active');
-                autoscrollBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                        <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                `;
-                autoscrollBtn.title = "Auto Scroll: OFF";
-            }
-        }
-
-        // Handle manual scroll
-        function handleManualScroll() {
-            const isAtBottom = logContent.scrollHeight - logContent.scrollTop <= logContent.clientHeight + 1;
-            
-            if (!isAtBottom && state.autoScroll) {
-                state.autoScroll = false;
-                updateAutoScrollButton();
-            }
-            
-            if (isAtBottom && !state.autoScroll) {
-                state.autoScroll = true;
-                updateAutoScrollButton();
-            }
-        }
-
-        // Scroll to bottom
-        function scrollToBottom() {
-            if (state.autoScroll) {
-                requestAnimationFrame(() => {
-                    logContent.scrollTop = logContent.scrollHeight;
-                });
-            }
-        }
-
-        // Update status display
         function updateStatus() {
             if (!state.enabled) {
                 statusDot.className = 'status-dot off';
@@ -1253,183 +1009,44 @@
             }
         }
 
-        // Toggle theme
-        function toggleTheme() {
-            state.theme = state.theme === 'dark' ? 'light' : 'dark';
-            document.body.classList.toggle('light-theme', state.theme === 'light');
-            
-            const icon = themeToggle.querySelector('svg');
-            if (state.theme === 'light') {
-                icon.innerHTML = `
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                `;
-            } else {
-                icon.innerHTML = `
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                `;
-            }
-        }
-
-        // Toggle minimize
-        function toggleMinimize() {
-            state.minimized = !state.minimized;
-            app.classList.toggle('minimized', state.minimized);
-            
-            const icon = minimizeBtn.querySelector('svg');
-            if (state.minimized) {
-                icon.innerHTML = `<path d="M5 12h14"/>`;
-            } else {
-                icon.innerHTML = `<path d="M5 15h14"/>`;
-            }
-        }
-
-        // Toggle enabled state
-        function toggleEnabled() {
-            state.enabled = !state.enabled;
-            updateStatus();
-            mp.trigger('l:toggle');
-        }
-
-        // Switch tab
         function switchTab(tab) {
             state.currentTab = tab;
-            tabs.forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === tab);
-            });
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
             state.unreadCounts[tab] = 0;
             updateBadges();
             displayLogs();
-            
-            if (state.autoScroll) {
-                setTimeout(() => {
-                    scrollToBottom();
-                }, 50);
-            }
+            if (state.autoScroll) setTimeout(scrollToBottom, 50);
         }
 
-        // Update badge counts
-        function updateBadges() {
-            Object.keys(state.unreadCounts).forEach(tab => {
-                const badge = document.getElementById(`badge-${tab}`);
-                const count = state.unreadCounts[tab];
-                
-                if (badge) {
-                    if (count > 0 && state.currentTab !== tab) {
-                        badge.textContent = count > 99 ? '99+' : count;
-                        badge.style.display = 'flex';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        // Clear logs
-        function clearLogs() {
-            state.logs[state.currentTab] = [];
-            displayLogs();
-            mp.trigger('l:clear');
-        }
-
-        // Export logs
-        function exportLogs() {
-            const logs = getFilteredLogs();
-            const text = logs.map(log => log.original).join('\n');
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `logger_${state.currentTab}_${Date.now()}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Get filtered logs based on time filter
-        function getFilteredLogs() {
-            const logs = state.logs[state.currentTab];
-            
-            if (state.timeFilter === 'all') {
-                return logs;
-            }
-            
-            const now = new Date();
-            let timeLimit;
-            
-            switch(state.timeFilter) {
-                case '1min':
-                    timeLimit = 60 * 1000;
-                    break;
-                case '5min':
-                    timeLimit = 5 * 60 * 1000;
-                    break;
-                case '10min':
-                    timeLimit = 10 * 60 * 1000;
-                    break;
-                case '30min':
-                    timeLimit = 30 * 60 * 1000;
-                    break;
-                case '1hour':
-                    timeLimit = 60 * 60 * 1000;
-                    break;
-                case 'today':
-                    // Фильтр "сегодня" - с начала дня
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    return logs.filter(log => new Date(log.timestamp) >= today);
-                case 'custom':
-                    if (state.timeFilterMinutes) {
-                        timeLimit = state.timeFilterMinutes * 60 * 1000;
-                    } else {
-                        return logs;
-                    }
-                    break;
-                default:
-                    return logs;
-            }
-            
-            return logs.filter(log => {
-                const logTime = new Date(log.timestamp);
-                return (now - logTime) <= timeLimit;
-            });
-        }
-
-        // Add log entry
         function addLog(data) {
             if (!state.enabled) return;
             
             const log = createLogEntry(data);
             state.logs.all.push(log);
             
-            const typeToTabMap = {
+            const targetTab = {
                 'RPC': 'rpc',
                 'EVENT': 'events',
                 'CALL': 'calls',
                 'REMOTE': 'calls',
                 'BROWSER': 'browser'
-            };
-            
-            const targetTab = typeToTabMap[data.type] || 'all';
+            }[data.type] || 'all';
             
             if (state.logs[targetTab]) {
                 state.logs[targetTab].push(log);
             }
             
-            if (state.currentTab !== 'all') {
-                state.unreadCounts.all++;
-            }
+            if (state.currentTab !== 'all') state.unreadCounts.all++;
             if (targetTab !== 'all' && state.currentTab !== targetTab) {
                 state.unreadCounts[targetTab]++;
             }
             
             updateBadges();
-            
             if (state.currentTab === 'all' || state.currentTab === targetTab) {
                 displayLogs();
             }
         }
 
-        // Create log entry object
         function createLogEntry(data) {
             const now = new Date();
             const time = now.toLocaleTimeString('en-US', { 
@@ -1443,14 +1060,13 @@
             const subtype = (data.subtype || '').toUpperCase();
             const text = data.text || '';
             
-            // Получаем цвета из конфига
             const typeLower = type.toLowerCase();
             const subtypeLower = subtype.toLowerCase();
             
             const typeColor = state.config.colors[typeLower] || state.config.colors.remote;
             const subtypeColor = state.config.colors.subtypes[subtypeLower] || state.config.colors.subtypes[''];
             
-            const entry = {
+            return {
                 time,
                 type,
                 subtype,
@@ -1460,11 +1076,8 @@
                 typeColor,
                 subtypeColor
             };
-            
-            return entry;
         }
 
-        // Display logs
         function displayLogs() {
             const logs = getFilteredLogs();
             logContent.innerHTML = '';
@@ -1473,7 +1086,6 @@
                 const entry = document.createElement('div');
                 entry.className = 'log-entry';
                 entry.dataset.index = index;
-                entry.dataset.timestamp = log.timestamp;
                 
                 entry.innerHTML = `
                     <div class="log-time">${log.time}</div>
@@ -1481,7 +1093,7 @@
                     <div class="log-subtype" style="background: ${log.subtypeColor.bg}; border-color: ${log.subtypeColor.border}; color: ${log.subtypeColor.text}">${log.subtype || '—'}</div>
                     <div class="log-text">${log.text}</div>
                     <div class="log-actions">
-                        <button class="log-action-btn" onclick="event.stopPropagation(); toggleContextMenu(event, ${index})">
+                        <button class="log-action-btn" onclick="event.stopPropagation(); showContextMenu(event, ${index})">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="7" cy="12" r="1"/>
                                 <circle cx="12" cy="12" r="1"/>
@@ -1491,20 +1103,115 @@
                     </div>
                 `;
                 
-                entry.addEventListener('dblclick', (e) => {
-                    if (!e.target.closest('.log-action-btn')) {
-                        copyLog(index);
-                        showNotification();
-                    }
+                entry.addEventListener('dblclick', () => {
+                    copyLog(index);
+                    showNotification('Log copied to clipboard!');
                 });
                 
                 logContent.appendChild(entry);
             });
             
-            scrollToBottom();
+            if (state.autoScroll) scrollToBottom();
+        }
+        
+        function getFilteredLogs() {
+            const logs = state.logs[state.currentTab];
+            if (state.timeFilter === 'all') return logs;
+            
+            const now = new Date();
+            let timeLimit = 0;
+            
+            switch(state.timeFilter) {
+                case '1min': timeLimit = 60 * 1000; break;
+                case '5min': timeLimit = 5 * 60 * 1000; break;
+                case '10min': timeLimit = 10 * 60 * 1000; break;
+                default: return logs;
+            }
+            
+            return logs.filter(log => (now - new Date(log.timestamp)) <= timeLimit);
         }
 
-        // Filter logs
+        function updateBadges() {
+            Object.keys(state.unreadCounts).forEach(tab => {
+                const badge = document.getElementById(`badge-${tab}`);
+                const count = state.unreadCounts[tab];
+                
+                if (badge && count > 0 && state.currentTab !== tab) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        function clearLogs() {
+            state.logs[state.currentTab] = [];
+            displayLogs();
+        }
+
+        function exportLogs() {
+            const logs = getFilteredLogs();
+            const text = logs.map(log => log.original).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `logger_${state.currentTab}_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            document.body.classList.toggle('light-theme', state.theme === 'light');
+            updateAutoScrollButton();
+        }
+
+        function toggleMinimize() {
+            state.minimized = !state.minimized;
+            app.classList.toggle('minimized', state.minimized);
+        }
+
+        function toggleAutoScroll() {
+            state.autoScroll = !state.autoScroll;
+            updateAutoScrollButton();
+            if (state.autoScroll) scrollToBottom();
+        }
+
+        function updateAutoScrollButton() {
+            const activeColor = state.theme === 'dark' ? '#CCCCCC' : '#FFFFFF';
+            const inactiveColor = state.theme === 'dark' ? '#CCCCCC' : '#292D32';
+            
+            if (state.autoScroll) {
+                autoscrollBtn.classList.add('active');
+                autoscrollBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="${activeColor}" width="21" height="21"><path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM10.13 14.5C10.42 14.79 10.42 15.27 10.13 15.56C9.98 15.71 9.79 15.78 9.6 15.78C9.41 15.78 9.22 15.71 9.07 15.56L6.58 13.07C5.99 12.48 5.99 11.53 6.58 10.94L9.07 8.45C9.36 8.16 9.84 8.16 10.13 8.45C10.42 8.74 10.42 9.22 10.13 9.51L7.64 12L10.13 14.5ZM17.42 13.06L14.93 15.55C14.78 15.7 14.59 15.77 14.4 15.77C14.21 15.77 14.02 15.7 13.87 15.55C13.58 15.26 13.58 14.78 13.87 14.49L16.36 12L13.87 9.5C13.58 9.21 13.58 8.73 13.87 8.44C14.16 8.15 14.64 8.15 14.93 8.44L17.42 10.93C18.01 11.52 18.01 12.48 17.42 13.06Z"/></svg>`;
+            } else {
+                autoscrollBtn.classList.remove('active');
+                autoscrollBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="${inactiveColor}" stroke-width="1.5" width="21" height="21"><path d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"/><path d="M9.60002 8.96997L7.11002 11.46C6.82002 11.75 6.82002 12.24 7.11002 12.53L9.60002 15.02"/><path d="M14.4 8.96997L16.89 11.46C17.18 11.75 17.18 12.24 16.89 12.53L14.4 15.02"/></svg>`;
+            }
+        }
+
+        function scrollToBottom() {
+            requestAnimationFrame(() => {
+                logContent.scrollTop = logContent.scrollHeight;
+            });
+        }
+
+        function handleManualScroll() {
+            const isAtBottom = logContent.scrollHeight - logContent.scrollTop <= logContent.clientHeight + 1;
+            
+            if (!isAtBottom && state.autoScroll) {
+                state.autoScroll = false;
+                updateAutoScrollButton();
+            }
+            
+            if (isAtBottom && !state.autoScroll) {
+                state.autoScroll = true;
+                updateAutoScrollButton();
+            }
+        }
+
         function filterLogs() {
             const searchTerm = searchInput.value.toLowerCase();
             const entries = document.querySelectorAll('.log-entry');
@@ -1522,113 +1229,34 @@
             });
         }
 
-        // Toggle context menu
-        function toggleContextMenu(event, index) {
+        function showContextMenu(event, index) {
             event.stopPropagation();
-            event.preventDefault();
-            
-            const button = event.target.closest('.log-action-btn');
-            
-            if (state.contextMenuOpen && state.selectedLogIndex === index) {
-                hideContextMenu();
-                return;
-            }
-            
-            hideContextMenu();
-            
-            button.classList.add('active');
-            
-            const rect = button.getBoundingClientRect();
-            let x = rect.left;
-            let y = rect.bottom + 5;
-            
-            // Проверка, чтобы контекстное меню не выходило за пределы окна
-            const menuWidth = contextMenu.offsetWidth;
-            const menuHeight = contextMenu.offsetHeight;
-            
-            if (x + menuWidth > window.innerWidth) {
-                x = window.innerWidth - menuWidth - 10;
-            }
-            
-            if (y + menuHeight > window.innerHeight) {
-                y = rect.top - menuHeight - 5;
-            }
-            
-            contextMenu.style.left = x + 'px';
-            contextMenu.style.top = y + 'px';
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.style.left = event.pageX + 'px';
+            contextMenu.style.top = event.pageY + 'px';
             contextMenu.classList.add('show');
             contextMenu.dataset.selectedIndex = index;
-            
-            state.contextMenuOpen = true;
-            state.selectedLogIndex = index;
         }
 
-        // Hide context menu
-        function hideContextMenu() {
-            contextMenu.classList.remove('show');
-            state.contextMenuOpen = false;
-            state.selectedLogIndex = null;
-            
-            document.querySelectorAll('.log-action-btn.active').forEach(btn => {
-                btn.classList.remove('active');
-            });
-        }
-
-        // Copy log
-        function copyLog(index) {
-            const idx = index !== undefined ? index : contextMenu.dataset.selectedIndex;
+        function copyLog(index = null) {
+            const idx = index !== null ? index : document.getElementById('contextMenu').dataset.selectedIndex;
             const logs = getFilteredLogs();
             const log = logs[idx];
             if (log) {
-                navigator.clipboard.writeText(log.original).then(() => {
-                    hideContextMenu();
-                    showNotification();
-                }).catch(err => {
-                    console.error('Failed to copy:', err);
-                });
+                navigator.clipboard.writeText(log.original);
+                showNotification('Log copied to clipboard!');
             }
         }
 
-        // Send log
-        function sendLog() {
-            const index = contextMenu.dataset.selectedIndex;
-            const logs = getFilteredLogs();
-            const log = logs[index];
-            if (log) {
-                console.log('Sending log:', log);
-                hideContextMenu();
-                alert('Log sent! (This is a demo)');
-            }
-        }
-
-        // Save log
-        function saveLog() {
-            const index = contextMenu.dataset.selectedIndex;
-            const logs = getFilteredLogs();
-            const log = logs[index];
-            if (log) {
-                const blob = new Blob([log.original], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `log_${Date.now()}.txt`;
-                a.click();
-                URL.revokeObjectURL(url);
-                hideContextMenu();
-            }
-        }
-
-        // Show notification
-        function showNotification() {
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.querySelector('span').textContent = message;
             notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 2000);
+            setTimeout(() => notification.classList.remove('show'), 2000);
         }
 
-        // Set configuration from external code
+        
         function setConfig(newConfig) {
-            // Обновляем цвета типов
             if (newConfig.typeColors) {
                 Object.keys(newConfig.typeColors).forEach(type => {
                     const typeLower = type.toLowerCase();
@@ -1640,7 +1268,6 @@
                 });
             }
             
-            // Обновляем цвета подтипов
             if (newConfig.subtypeColors) {
                 Object.keys(newConfig.subtypeColors).forEach(subtype => {
                     const subtypeLower = subtype.toLowerCase();
@@ -1652,7 +1279,6 @@
                 });
             }
             
-            // Обновляем другие настройки
             if (newConfig.enabled !== undefined) {
                 state.enabled = newConfig.enabled;
                 updateStatus();
@@ -1662,45 +1288,26 @@
                 state.theme = newConfig.theme;
                 document.body.classList.toggle('light-theme', state.theme === 'light');
             }
-            
-            console.log('Config updated:', state.config);
         }
 
-        // Установка фильтра времени из JS
-        function setTimeFilter(value, label) {
+        function setTimeFilter(value) {
+            if (!['all', '1min', '5min', '10min'].includes(value)) return;
+            
             state.timeFilter = value;
-            
-            if (label) {
-                timeFilterLabel.textContent = label;
-            } else {
-                // Автоматически определяем label
-                const option = Array.from(timeFilterOptions).find(opt => opt.dataset.value === value);
-                if (option) {
-                    timeFilterLabel.textContent = option.textContent;
-                }
+            const option = document.querySelector(`.time-filter-option[data-value="${value}"]`);
+            if (option) {
+                document.querySelectorAll('.time-filter-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.querySelector('.time-filter-label').textContent = option.textContent;
             }
-            
             displayLogs();
         }
 
-        // Установка кастомного времени в минутах
-        function setCustomTime(minutes) {
-            if (minutes && minutes > 0 && minutes <= 1440) {
-                state.timeFilter = 'custom';
-                state.timeFilterMinutes = minutes;
-                timeFilterLabel.textContent = `Last ${minutes} min`;
-                displayLogs();
-            }
-        }
-
-        // Initialize on load
         window.addEventListener('load', init);
         
-        // Экспортируем функции для внешнего использования
         window.addLog = addLog;
         window.setConfig = setConfig;
         window.setTimeFilter = setTimeFilter;
-        window.setCustomTime = setCustomTime;
         window.clearLogs = clearLogs;
         window.toggleEnabled = toggleEnabled;
         window.getState = () => ({ ...state });
