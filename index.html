@@ -867,7 +867,6 @@
             }
         };
 
-        
         let state = {
             enabled: false,
             minimized: false,
@@ -902,6 +901,12 @@
             setupTimeFilter();
             updateBadges();
             updateAutoScrollButton();
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && state.contextMenuOpen) {
+                    closeContextMenu();
+                }
+            });
         }
 
         function setupDragAndDrop() {
@@ -1229,13 +1234,44 @@
             });
         }
 
+        function closeContextMenuOnOutsideClick(e) {
+            const contextMenu = document.getElementById('contextMenu');
+            const isClickInsideMenu = contextMenu.contains(e.target);
+            const isClickOnMenuButton = e.target.closest('.log-action-btn');
+            
+            if (!isClickInsideMenu && !isClickOnMenuButton && state.contextMenuOpen) {
+                closeContextMenu();
+            }
+        }
+
+        function closeContextMenu() {
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.classList.remove('show');
+            state.contextMenuOpen = false;
+            state.selectedLogIndex = null;
+            document.removeEventListener('click', closeContextMenuOnOutsideClick);
+        }
+
         function showContextMenu(event, index) {
             event.stopPropagation();
+            event.preventDefault();
+            
             const contextMenu = document.getElementById('contextMenu');
+
+            if (state.contextMenuOpen && state.selectedLogIndex === index) {
+                closeContextMenu();
+                return;
+            }
+            
+            state.contextMenuOpen = true;
+            state.selectedLogIndex = index;
+            
             contextMenu.style.left = event.pageX + 'px';
             contextMenu.style.top = event.pageY + 'px';
             contextMenu.classList.add('show');
             contextMenu.dataset.selectedIndex = index;
+
+            document.addEventListener('click', closeContextMenuOnOutsideClick);
         }
 
         function copyLog(index = null) {
@@ -1246,6 +1282,7 @@
                 navigator.clipboard.writeText(log.original);
                 showNotification('Log copied to clipboard!');
             }
+            closeContextMenu(); // Закрываем меню после копирования
         }
 
         function showNotification(message) {
