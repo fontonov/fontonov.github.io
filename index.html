@@ -845,25 +845,21 @@
     </div>
         <script>
         
-        const defaultConfig = {
-            enabled: false,
-            theme: 'dark',
-            colors: {
+        const colors = {
+            remote: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
+            rpc: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
+            browser: { bg: '#c792ea20', border: '#c792ea4D', text: '#c792ea' },
+            call: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' },
+            event: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
+            subtypes: {
+                '': { bg: '#b0b0b020', border: '#b0b0b04D', text: '#b0b0b0' },
+                execute: { bg: '#ffb34720', border: '#ffb3474D', text: '#ffb347' },
+                call: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
+                proc: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
                 remote: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
-                rpc: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
-                browser: { bg: '#c792ea20', border: '#c792ea4D', text: '#c792ea' },
-                call: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' },
-                event: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
-                subtypes: {
-                    '': { bg: '#b0b0b020', border: '#b0b0b04D', text: '#b0b0b0' },
-                    execute: { bg: '#ffb34720', border: '#ffb3474D', text: '#ffb347' },
-                    call: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
-                    proc: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
-                    remote: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
-                    local: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
-                    client: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
-                    server: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' }
-                }
+                local: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
+                client: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
+                server: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' }
             }
         };
 
@@ -873,14 +869,14 @@
             theme: 'dark',
             currentTab: 'all',
             timeFilter: 'all',
-            autoScroll: false,
+            autoScroll: true,
+            searchTerm: '',
             unreadCounts: { all: 0, rpc: 0, events: 0, calls: 0, browser: 0 },
             logs: { all: [], rpc: [], events: [], calls: [], browser: [] },
             dragging: false,
             dragOffset: { x: 0, y: 0 },
             contextMenuOpen: false,
-            selectedLogIndex: null,
-            config: { ...defaultConfig }
+            selectedLogIndex: null
         };
 
         const app = document.getElementById('app');
@@ -907,6 +903,18 @@
                     closeContextMenu();
                 }
             });
+
+            // Добавляем тестовые логи йцуфвяч
+            state.enabled = true;
+            updateStatus();
+            
+            setTimeout(() => {
+                addLog({ type: 'RPC', subtype: 'call', text: 'Test RPC call message' });
+                addLog({ type: 'EVENT', subtype: 'execute', text: 'Test event execution' });
+                addLog({ type: 'CALL', subtype: 'remote', text: 'Test remote call' });
+                addLog({ type: 'BROWSER', subtype: 'client', text: 'Test browser client message' });
+                addLog({ type: 'REMOTE', subtype: 'server', text: 'Test remote server message' });
+            }, 100);
         }
 
         function setupDragAndDrop() {
@@ -967,12 +975,15 @@
                     timeFilterDropdown.classList.remove('show');
                     timeFilterButton.classList.remove('active');
                     displayLogs();
+                    dispatchStateChange('timeFilter', state.timeFilter);
                 });
             });
             
-            document.addEventListener('click', () => {
-                timeFilterDropdown.classList.remove('show');
-                timeFilterButton.classList.remove('active');
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-time-filter')) {
+                    timeFilterDropdown.classList.remove('show');
+                    timeFilterButton.classList.remove('active');
+                }
             });
         }
 
@@ -995,9 +1006,28 @@
             logContent.addEventListener('scroll', handleManualScroll);
         }
 
+        function dispatchStateChange(key, value) {
+            // Отправляем событие для RAGE MP
+            if (typeof mp !== 'undefined') {
+                if (mp.trigger) {
+                    mp.trigger('loggerStateChange', key, value);
+                }
+                if (mp.events && mp.events.call) {
+                    mp.events.call('loggerStateChange', key, value);
+                }
+            }
+            
+            // Также отправляем обычное браузерное событие для совместимости
+            const event = new CustomEvent('loggerStateChange', {
+                detail: { key, value }
+            });
+            window.dispatchEvent(event);
+        }
+
         function toggleEnabled() {
             state.enabled = !state.enabled;
             updateStatus();
+            dispatchStateChange('enabled', state.enabled);
         }
 
         function updateStatus() {
@@ -1020,7 +1050,10 @@
             state.unreadCounts[tab] = 0;
             updateBadges();
             displayLogs();
-            if (state.autoScroll) setTimeout(scrollToBottom, 50);
+            if (state.autoScroll) {
+                setTimeout(scrollToBottom, 50);
+            }
+            dispatchStateChange('currentTab', state.currentTab);
         }
 
         function addLog(data) {
@@ -1052,6 +1085,12 @@
             }
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function createLogEntry(data) {
             const now = new Date();
             const time = now.toLocaleTimeString('en-US', { 
@@ -1068,8 +1107,8 @@
             const typeLower = type.toLowerCase();
             const subtypeLower = subtype.toLowerCase();
             
-            const typeColor = state.config.colors[typeLower] || state.config.colors.remote;
-            const subtypeColor = state.config.colors.subtypes[subtypeLower] || state.config.colors.subtypes[''];
+            const typeColor = colors[typeLower] || colors.remote;
+            const subtypeColor = colors.subtypes[subtypeLower] || colors.subtypes[''];
             
             return {
                 time,
@@ -1093,10 +1132,10 @@
                 entry.dataset.index = index;
                 
                 entry.innerHTML = `
-                    <div class="log-time">${log.time}</div>
-                    <div class="log-type" style="background: ${log.typeColor.bg}; border-color: ${log.typeColor.border}; color: ${log.typeColor.text}">${log.type}</div>
-                    <div class="log-subtype" style="background: ${log.subtypeColor.bg}; border-color: ${log.subtypeColor.border}; color: ${log.subtypeColor.text}">${log.subtype || '—'}</div>
-                    <div class="log-text">${log.text}</div>
+                    <div class="log-time">${escapeHtml(log.time)}</div>
+                    <div class="log-type" style="background: ${escapeHtml(log.typeColor.bg)}; border-color: ${escapeHtml(log.typeColor.border)}; color: ${escapeHtml(log.typeColor.text)}">${escapeHtml(log.type)}</div>
+                    <div class="log-subtype" style="background: ${escapeHtml(log.subtypeColor.bg)}; border-color: ${escapeHtml(log.subtypeColor.border)}; color: ${escapeHtml(log.subtypeColor.text)}">${escapeHtml(log.subtype || '—')}</div>
+                    <div class="log-text">${escapeHtml(log.text)}</div>
                     <div class="log-actions">
                         <button class="log-action-btn" onclick="event.stopPropagation(); showContextMenu(event, ${index})">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1109,8 +1148,14 @@
                 `;
                 
                 entry.addEventListener('dblclick', () => {
-                    copyLog(index);
-                    showNotification('Log copied to clipboard!');
+                    const logs = getFilteredLogs();
+                    const log = logs[index];
+                    if (log) {
+                        navigator.clipboard.writeText(log.original).catch(() => {
+                            showNotification('Failed to copy log!');
+                        });
+                        showNotification('Log copied to clipboard!');
+                    }
                 });
                 
                 logContent.appendChild(entry);
@@ -1120,20 +1165,34 @@
         }
         
         function getFilteredLogs() {
-            const logs = state.logs[state.currentTab];
-            if (state.timeFilter === 'all') return logs;
+            let logs = state.logs[state.currentTab] || [];
             
-            const now = new Date();
-            let timeLimit = 0;
-            
-            switch(state.timeFilter) {
-                case '1min': timeLimit = 60 * 1000; break;
-                case '5min': timeLimit = 5 * 60 * 1000; break;
-                case '10min': timeLimit = 10 * 60 * 1000; break;
-                default: return logs;
+            // Фильтр по времени
+            if (state.timeFilter !== 'all') {
+                const now = Date.now();
+                let timeLimit = 0;
+                
+                switch(state.timeFilter) {
+                    case '1min': timeLimit = 60 * 1000; break;
+                    case '5min': timeLimit = 5 * 60 * 1000; break;
+                    case '10min': timeLimit = 10 * 60 * 1000; break;
+                    default: break;
+                }
+                
+                logs = logs.filter(log => (now - log.timestamp) <= timeLimit);
             }
             
-            return logs.filter(log => (now - new Date(log.timestamp)) <= timeLimit);
+            // Фильтр по поиску
+            if (state.searchTerm) {
+                const searchLower = state.searchTerm.toLowerCase();
+                logs = logs.filter(log => {
+                    return log.text.toLowerCase().includes(searchLower) ||
+                           log.type.toLowerCase().includes(searchLower) ||
+                           log.subtype.toLowerCase().includes(searchLower);
+                });
+            }
+            
+            return logs;
         }
 
         function updateBadges() {
@@ -1151,7 +1210,26 @@
         }
 
         function clearLogs() {
-            state.logs[state.currentTab] = [];
+            if (state.currentTab === 'all') {
+                // Очищаем все логи
+                Object.keys(state.logs).forEach(key => {
+                    state.logs[key] = [];
+                });
+            } else {
+                // Очищаем только текущую вкладку
+                state.logs[state.currentTab] = [];
+                // Также удаляем эти логи из all
+                state.logs.all = state.logs.all.filter(log => {
+                    const targetTab = {
+                        'RPC': 'rpc',
+                        'EVENT': 'events',
+                        'CALL': 'calls',
+                        'REMOTE': 'calls',
+                        'BROWSER': 'browser'
+                    }[log.type] || 'all';
+                    return targetTab !== state.currentTab;
+                });
+            }
             displayLogs();
         }
 
@@ -1171,17 +1249,20 @@
             state.theme = state.theme === 'dark' ? 'light' : 'dark';
             document.body.classList.toggle('light-theme', state.theme === 'light');
             updateAutoScrollButton();
+            dispatchStateChange('theme', state.theme);
         }
 
         function toggleMinimize() {
             state.minimized = !state.minimized;
             app.classList.toggle('minimized', state.minimized);
+            dispatchStateChange('minimized', state.minimized);
         }
 
         function toggleAutoScroll() {
             state.autoScroll = !state.autoScroll;
             updateAutoScrollButton();
             if (state.autoScroll) scrollToBottom();
+            dispatchStateChange('autoScroll', state.autoScroll);
         }
 
         function updateAutoScrollButton() {
@@ -1209,33 +1290,25 @@
             if (!isAtBottom && state.autoScroll) {
                 state.autoScroll = false;
                 updateAutoScrollButton();
+                dispatchStateChange('autoScroll', state.autoScroll);
             }
             
             if (isAtBottom && !state.autoScroll) {
                 state.autoScroll = true;
                 updateAutoScrollButton();
+                dispatchStateChange('autoScroll', state.autoScroll);
             }
         }
 
         function filterLogs() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const entries = document.querySelectorAll('.log-entry');
-            
-            entries.forEach(entry => {
-                const text = entry.querySelector('.log-text').textContent.toLowerCase();
-                const type = entry.querySelector('.log-type').textContent.toLowerCase();
-                const subtype = entry.querySelector('.log-subtype').textContent.toLowerCase();
-                
-                const matches = text.includes(searchTerm) || 
-                              type.includes(searchTerm) || 
-                              subtype.includes(searchTerm);
-                
-                entry.style.display = matches ? 'grid' : 'none';
-            });
+            state.searchTerm = searchInput.value;
+            displayLogs();
         }
 
         function closeContextMenuOnOutsideClick(e) {
             const contextMenu = document.getElementById('contextMenu');
+            if (!contextMenu) return;
+            
             const isClickInsideMenu = contextMenu.contains(e.target);
             const isClickOnMenuButton = e.target.closest('.log-action-btn');
             
@@ -1246,7 +1319,9 @@
 
         function closeContextMenu() {
             const contextMenu = document.getElementById('contextMenu');
-            contextMenu.classList.remove('show');
+            if (contextMenu) {
+                contextMenu.classList.remove('show');
+            }
             state.contextMenuOpen = false;
             state.selectedLogIndex = null;
             document.removeEventListener('click', closeContextMenuOnOutsideClick);
@@ -1257,6 +1332,7 @@
             event.preventDefault();
             
             const contextMenu = document.getElementById('contextMenu');
+            if (!contextMenu) return;
 
             if (state.contextMenuOpen && state.selectedLogIndex === index) {
                 closeContextMenu();
@@ -1275,79 +1351,110 @@
         }
 
         function copyLog(index = null) {
-            const idx = index !== null ? index : document.getElementById('contextMenu').dataset.selectedIndex;
+            const contextMenu = document.getElementById('contextMenu');
+            const idx = index !== null ? index : parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
             const logs = getFilteredLogs();
             const log = logs[idx];
             if (log) {
-                navigator.clipboard.writeText(log.original);
+                navigator.clipboard.writeText(log.original).catch(() => {
+                    showNotification('Failed to copy log!');
+                });
                 showNotification('Log copied to clipboard!');
             }
-            closeContextMenu(); // Закрываем меню после копирования
+            closeContextMenu();
+        }
+
+        function sendLog() {
+            const contextMenu = document.getElementById('contextMenu');
+            const idx = parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
+            const logs = getFilteredLogs();
+            const log = logs[idx];
+            if (log) {
+                // Здесь можно добавить логику отправки RPC
+                showNotification('RPC send functionality not implemented');
+            }
+            closeContextMenu();
+        }
+
+        function saveLog() {
+            const contextMenu = document.getElementById('contextMenu');
+            const idx = parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
+            const logs = getFilteredLogs();
+            const log = logs[idx];
+            if (log) {
+                const blob = new Blob([log.original], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `log_${Date.now()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification('Log saved!');
+            }
+            closeContextMenu();
         }
 
         function showNotification(message) {
             const notification = document.getElementById('notification');
-            notification.querySelector('span').textContent = message;
+            if (!notification) return;
+            
+            const span = notification.querySelector('span');
+            if (span) {
+                span.textContent = message;
+            }
             notification.classList.add('show');
             setTimeout(() => notification.classList.remove('show'), 2000);
         }
 
         
-        function setConfig(newConfig) {
-            if (newConfig.typeColors) {
-                Object.keys(newConfig.typeColors).forEach(type => {
-                    const typeLower = type.toLowerCase();
-                    if (state.config.colors[typeLower]) {
-                        Object.assign(state.config.colors[typeLower], newConfig.typeColors[type]);
-                    } else {
-                        state.config.colors[typeLower] = newConfig.typeColors[type];
-                    }
-                });
-            }
-            
-            if (newConfig.subtypeColors) {
-                Object.keys(newConfig.subtypeColors).forEach(subtype => {
-                    const subtypeLower = subtype.toLowerCase();
-                    if (state.config.colors.subtypes[subtypeLower]) {
-                        Object.assign(state.config.colors.subtypes[subtypeLower], newConfig.subtypeColors[subtype]);
-                    } else {
-                        state.config.colors.subtypes[subtypeLower] = newConfig.subtypeColors[subtype];
-                    }
-                });
-            }
-            
-            if (newConfig.enabled !== undefined) {
-                state.enabled = newConfig.enabled;
+        function loadSettings(settings) {
+            if (settings.enabled !== undefined) {
+                state.enabled = settings.enabled;
                 updateStatus();
             }
             
-            if (newConfig.theme) {
-                state.theme = newConfig.theme;
-                document.body.classList.toggle('light-theme', state.theme === 'light');
+            if (settings.minimized !== undefined) {
+                state.minimized = settings.minimized;
+                app.classList.toggle('minimized', state.minimized);
             }
-        }
-
-        function setTimeFilter(value) {
-            if (!['all', '1min', '5min', '10min'].includes(value)) return;
             
-            state.timeFilter = value;
-            const option = document.querySelector(`.time-filter-option[data-value="${value}"]`);
-            if (option) {
-                document.querySelectorAll('.time-filter-option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                document.querySelector('.time-filter-label').textContent = option.textContent;
+            if (settings.theme !== undefined) {
+                state.theme = settings.theme;
+                document.body.classList.toggle('light-theme', state.theme === 'light');
+                updateAutoScrollButton();
             }
-            displayLogs();
+            
+            if (settings.currentTab !== undefined) {
+                state.currentTab = settings.currentTab;
+                tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === state.currentTab));
+                displayLogs();
+            }
+            
+            if (settings.timeFilter !== undefined) {
+                state.timeFilter = settings.timeFilter;
+                const option = document.querySelector(`.time-filter-option[data-value="${state.timeFilter}"]`);
+                if (option) {
+                    document.querySelectorAll('.time-filter-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    const label = document.querySelector('.time-filter-label');
+                    if (label) {
+                        label.textContent = option.textContent;
+                    }
+                }
+                displayLogs();
+            }
+            
+            if (settings.autoScroll !== undefined) {
+                state.autoScroll = settings.autoScroll;
+                updateAutoScrollButton();
+                if (state.autoScroll) scrollToBottom();
+            }
         }
 
         window.addEventListener('load', init);
         
         window.addLog = addLog;
-        window.setConfig = setConfig;
-        window.setTimeFilter = setTimeFilter;
-        window.clearLogs = clearLogs;
-        window.toggleEnabled = toggleEnabled;
-        window.getState = () => ({ ...state });
+        window.loadSettings = loadSettings;
     </script>
 </body>
 </html>
