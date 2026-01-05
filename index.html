@@ -1151,10 +1151,11 @@
                     const logs = getFilteredLogs();
                     const log = logs[index];
                     if (log) {
-                        navigator.clipboard.writeText(log.original).catch(() => {
+                        copyToClipboard(log.original).then(() => {
+                            showNotification('Log copied to clipboard!');
+                        }).catch(() => {
                             showNotification('Failed to copy log!');
                         });
-                        showNotification('Log copied to clipboard!');
                     }
                 });
                 
@@ -1350,16 +1351,61 @@
             document.addEventListener('click', closeContextMenuOnOutsideClick);
         }
 
+        function copyToClipboard(text) {
+            // Метод 1: Используем Clipboard API (если доступен)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text).catch(() => {
+                    // Если Clipboard API не работает, используем fallback
+                    return fallbackCopyToClipboard(text);
+                });
+            } else {
+                // Метод 2: Fallback для CEF и старых браузеров
+                return fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Создаем временный textarea элемент
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    
+                    // Выбираем текст
+                    textArea.select();
+                    textArea.setSelectionRange(0, 99999); // Для мобильных устройств
+                    
+                    // Копируем
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        resolve();
+                    } else {
+                        reject(new Error('Copy command failed'));
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+
         function copyLog(index = null) {
             const contextMenu = document.getElementById('contextMenu');
             const idx = index !== null ? index : parseInt(contextMenu?.dataset.selectedIndex || '0', 10);
             const logs = getFilteredLogs();
             const log = logs[idx];
             if (log) {
-                navigator.clipboard.writeText(log.original).catch(() => {
+                copyToClipboard(log.original).then(() => {
+                    showNotification('Log copied to clipboard!');
+                }).catch(() => {
                     showNotification('Failed to copy log!');
                 });
-                showNotification('Log copied to clipboard!');
             }
             closeContextMenu();
         }
