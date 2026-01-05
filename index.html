@@ -324,26 +324,141 @@
             letter-spacing: 0.5px;
         }
 
-        .time-filter {
-            padding: 6px 12px;
+        /* Кастомный фильтр времени */
+        .custom-time-filter {
+            position: relative;
+            width: 140px;
+        }
+        
+        .time-filter-button {
+            width: 100%;
+            padding: 8px 12px;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: var(--primary);
             color: var(--text);
             font-size: 13px;
             cursor: pointer;
-            outline: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: all 0.2s ease;
-            min-width: 140px;
+            outline: none;
         }
-
-        .time-filter:hover {
+        
+        .time-filter-button:hover {
             border-color: var(--accent);
         }
-
-        .time-filter:focus {
+        
+        .time-filter-button.active {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(122, 162, 255, 0.1);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .time-filter-arrow {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.2s ease;
+        }
+        
+        .time-filter-button.active .time-filter-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .time-filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 4px;
+            overflow: hidden;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 15px var(--shadow);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .time-filter-dropdown.show {
+            display: block;
+            animation: dropdownAppear 0.2s ease;
+        }
+        
+        @keyframes dropdownAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .time-filter-option {
+            padding: 10px 12px;
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .time-filter-option:last-child {
+            border-bottom: none;
+        }
+        
+        .time-filter-option:hover {
+            background: var(--hover);
+        }
+        
+        .time-filter-option.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        /* Дополнительные опции времени */
+        .time-custom-input {
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border-top: 1px solid var(--border);
+        }
+        
+        .time-custom-input input {
+            flex: 1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+        }
+        
+        .time-custom-input input:focus {
+            border-color: var(--accent);
+        }
+        
+        .time-custom-input button {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .time-custom-input button:hover {
+            background: var(--hover);
+            border-color: var(--accent);
         }
 
         /* AutoScroll Button */
@@ -464,36 +579,6 @@
             cursor: default;
         }
 
-        .log-type-remote {
-            background: rgba(122, 182, 255, 0.1);
-            color: #7ab6ff;
-            border: 1px solid rgba(122, 182, 255, 0.3);
-        }
-
-        .log-type-rpc {
-            background: rgba(180, 140, 255, 0.1);
-            color: #b48cff;
-            border: 1px solid rgba(180, 140, 255, 0.3);
-        }
-
-        .log-type-browser {
-            background: rgba(199, 146, 234, 0.1);
-            color: #c792ea;
-            border: 1px solid rgba(199, 146, 234, 0.3);
-        }
-
-        .log-type-call {
-            background: rgba(255, 122, 122, 0.1);
-            color: #ff7a7a;
-            border: 1px solid rgba(255, 122, 122, 0.3);
-        }
-
-        .log-type-event {
-            background: rgba(76, 255, 216, 0.1);
-            color: #4cffd8;
-            border: 1px solid rgba(76, 255, 216, 0.3);
-        }
-
         .log-subtype {
             font-size: 11px;
             font-weight: 600;
@@ -503,42 +588,6 @@
             text-transform: uppercase;
             min-width: 70px;
             cursor: default;
-        }
-
-        .log-subtype-empty {
-            background: rgba(176, 176, 176, 0.1);
-            color: #b0b0b0;
-            border: 1px solid rgba(176, 176, 176, 0.3);
-        }
-
-        .log-subtype-execute {
-            background: rgba(255, 179, 71, 0.1);
-            color: #ffb347;
-            border: 1px solid rgba(255, 179, 71, 0.3);
-        }
-
-        .log-subtype-client {
-            background: rgba(122, 182, 255, 0.1);
-            color: #7ab6ff;
-            border: 1px solid rgba(122, 182, 255, 0.3);
-        }
-
-        .log-subtype-server {
-            background: rgba(255, 122, 122, 0.1);
-            color: #ff7a7a;
-            border: 1px solid rgba(255, 122, 122, 0.3);
-        }
-
-        .log-subtype-call {
-            background: rgba(180, 140, 255, 0.1);
-            color: #b48cff;
-            border: 1px solid rgba(180, 140, 255, 0.3);
-        }
-
-        .log-subtype-proc {
-            background: rgba(76, 255, 216, 0.1);
-            color: #4cffd8;
-            border: 1px solid rgba(76, 255, 216, 0.3);
         }
 
         .log-text {
@@ -589,8 +638,13 @@
             z-index: 10000;
             min-width: 180px;
             overflow: hidden;
+            display: none;
             opacity: 0;
             transform: translateY(-10px) scale(0.95);
+        }
+
+        .context-menu.show {
+            display: block;
             animation: menuAppear 0.2s ease forwards;
         }
 
@@ -774,12 +828,30 @@
             </div>
             <div class="filter-controls">
                 <span class="filter-label">Time:</span>
-                <select class="time-filter" id="timeFilter">
-                    <option value="all">All Time</option>
-                    <option value="1min">Last 1 min</option>
-                    <option value="5min">Last 5 min</option>
-                    <option value="10min">Last 10 min</option>
-                </select>
+                
+                <!-- Кастомный фильтр времени -->
+                <div class="custom-time-filter" id="customTimeFilter">
+                    <button class="time-filter-button" id="timeFilterButton">
+                        <span class="time-filter-label">All Time</span>
+                        <svg class="time-filter-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div class="time-filter-dropdown" id="timeFilterDropdown">
+                        <div class="time-filter-option active" data-value="all">All Time</div>
+                        <div class="time-filter-option" data-value="1min">Last 1 minute</div>
+                        <div class="time-filter-option" data-value="5min">Last 5 minutes</div>
+                        <div class="time-filter-option" data-value="10min">Last 10 minutes</div>
+                        <div class="time-filter-option" data-value="30min">Last 30 minutes</div>
+                        <div class="time-filter-option" data-value="1hour">Last 1 hour</div>
+                        <div class="time-filter-option" data-value="today">Today</div>
+                        <div class="time-custom-input">
+                            <input type="number" id="customTimeInput" placeholder="Minutes" min="1" max="1440">
+                            <button id="applyCustomTime">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <button class="autoscroll-btn active" id="autoscrollBtn" title="Auto Scroll">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
@@ -840,6 +912,30 @@
     </div>
 
     <script>
+        // Конфигурация по умолчанию
+        const defaultConfig = {
+            enabled: false,
+            theme: 'dark',
+            colors: {
+                remote: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
+                rpc: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
+                browser: { bg: '#c792ea20', border: '#c792ea4D', text: '#c792ea' },
+                call: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' },
+                event: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
+                
+                subtypes: {
+                    '': { bg: '#b0b0b020', border: '#b0b0b04D', text: '#b0b0b0' },
+                    execute: { bg: '#ffb34720', border: '#ffb3474D', text: '#ffb347' },
+                    call: { bg: '#b48cff20', border: '#b48cff4D', text: '#b48cff' },
+                    proc: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
+                    remote: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
+                    local: { bg: '#4cffd820', border: '#4cffd84D', text: '#4cffd8' },
+                    client: { bg: '#7ab6ff20', border: '#7ab6ff4D', text: '#7ab6ff' },
+                    server: { bg: '#ff7a7a20', border: '#ff7a7a4D', text: '#ff7a7a' }
+                }
+            }
+        };
+
         // State management
         let state = {
             enabled: false,
@@ -847,6 +943,7 @@
             theme: 'dark',
             currentTab: 'all',
             timeFilter: 'all',
+            timeFilterMinutes: null,
             autoScroll: true,
             unreadCounts: {
                 all: 0,
@@ -865,7 +962,8 @@
             dragging: false,
             dragOffset: { x: 0, y: 0 },
             contextMenuOpen: false,
-            autoTestInterval: null
+            selectedLogIndex: null,
+            config: { ...defaultConfig }
         };
 
         // DOM Elements
@@ -877,26 +975,32 @@
         const toggleBtn = document.getElementById('toggleBtn');
         const clearBtn = document.getElementById('clearBtn');
         const exportBtn = document.getElementById('exportBtn');
-        const timeFilter = document.getElementById('timeFilter');
         const autoscrollBtn = document.getElementById('autoscrollBtn');
         const tabs = document.querySelectorAll('.tab');
         const logContent = document.getElementById('logContent');
         const contextMenu = document.getElementById('contextMenu');
         const notification = document.getElementById('notification');
         const searchInput = document.querySelector('.search-input');
+        
+        // Элементы для кастомного фильтра
+        const timeFilterButton = document.getElementById('timeFilterButton');
+        const timeFilterLabel = timeFilterButton.querySelector('.time-filter-label');
+        const timeFilterDropdown = document.getElementById('timeFilterDropdown');
+        const timeFilterOptions = document.querySelectorAll('.time-filter-option');
+        const customTimeInput = document.getElementById('customTimeInput');
+        const applyCustomTimeBtn = document.getElementById('applyCustomTime');
 
         // Initialize
         function init() {
             updateStatus();
             setupEventListeners();
             setupDragAndDrop();
-            generateSampleLogs();
+            setupTimeFilter();
             updateBadges();
-            startAutoTest();
             updateAutoScrollButton();
         }
 
-        // Setup drag and drop (без изменения курсора)
+        // Setup drag and drop
         function setupDragAndDrop() {
             const header = document.querySelector('.header');
             
@@ -908,7 +1012,7 @@
                 if (e.target.closest('.header-btn') || e.target.closest('.tab') || 
                     e.target.closest('.control-btn') || e.target.closest('.time-filter') ||
                     e.target.closest('.search-input') || e.target.closest('.autoscroll-btn')) {
-                    return; // Don't drag when clicking on buttons
+                    return;
                 }
                 
                 state.dragging = true;
@@ -941,6 +1045,87 @@
             }
         }
 
+        // Настройка кастомного фильтра времени
+        function setupTimeFilter() {
+            // Открытие/закрытие выпадающего меню
+            timeFilterButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                timeFilterDropdown.classList.toggle('show');
+                timeFilterButton.classList.toggle('active');
+            });
+            
+            // Выбор опции
+            timeFilterOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = option.dataset.value;
+                    const label = option.textContent;
+                    
+                    // Снимаем активный класс со всех опций
+                    timeFilterOptions.forEach(opt => opt.classList.remove('active'));
+                    // Добавляем активный класс выбранной опции
+                    option.classList.add('active');
+                    
+                    // Обновляем состояние
+                    state.timeFilter = value;
+                    state.timeFilterMinutes = null;
+                    
+                    // Обновляем кнопку
+                    timeFilterLabel.textContent = label;
+                    timeFilterButton.classList.remove('active');
+                    
+                    // Закрываем меню
+                    timeFilterDropdown.classList.remove('show');
+                    
+                    // Применяем фильтр
+                    displayLogs();
+                });
+            });
+            
+            // Применение кастомного времени
+            applyCustomTimeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const minutes = parseInt(customTimeInput.value);
+                
+                if (minutes && minutes > 0 && minutes <= 1440) {
+                    // Снимаем активный класс со всех опций
+                    timeFilterOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Обновляем состояние
+                    state.timeFilter = 'custom';
+                    state.timeFilterMinutes = minutes;
+                    
+                    // Обновляем кнопку
+                    timeFilterLabel.textContent = `Last ${minutes} min`;
+                    timeFilterButton.classList.remove('active');
+                    
+                    // Закрываем меню
+                    timeFilterDropdown.classList.remove('show');
+                    
+                    // Очищаем поле ввода
+                    customTimeInput.value = '';
+                    
+                    // Применяем фильтр
+                    displayLogs();
+                }
+            });
+            
+            // Закрытие меню при клике вне его
+            document.addEventListener('click', (e) => {
+                if (!timeFilterButton.contains(e.target) && !timeFilterDropdown.contains(e.target)) {
+                    timeFilterDropdown.classList.remove('show');
+                    timeFilterButton.classList.remove('active');
+                }
+            });
+            
+            // Обработка Enter в поле ввода
+            customTimeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    applyCustomTimeBtn.click();
+                }
+            });
+        }
+
         // Setup event listeners
         function setupEventListeners() {
             // Theme toggle
@@ -958,12 +1143,6 @@
             // Export logs
             exportBtn.addEventListener('click', exportLogs);
             
-            // Time filter change
-            timeFilter.addEventListener('change', () => {
-                state.timeFilter = timeFilter.value;
-                displayLogs();
-            });
-            
             // Auto scroll toggle
             autoscrollBtn.addEventListener('click', toggleAutoScroll);
             
@@ -980,15 +1159,13 @@
             
             // Close context menu on click outside
             document.addEventListener('click', (e) => {
-                if (contextMenu && !contextMenu.contains(e.target) && 
-                    !e.target.closest('.log-action-btn')) {
+                if (contextMenu.classList.contains('show') && !contextMenu.contains(e.target)) {
                     hideContextMenu();
                 }
             });
             
             // Handle window resize
             window.addEventListener('resize', () => {
-                // Keep app within bounds on resize
                 const rect = app.getBoundingClientRect();
                 if (rect.right > window.innerWidth || rect.bottom > window.innerHeight) {
                     app.style.left = Math.max(0, Math.min(rect.left, window.innerWidth - app.offsetWidth)) + 'px';
@@ -998,6 +1175,11 @@
             
             // Manual scroll detection
             logContent.addEventListener('scroll', handleManualScroll);
+            
+            // Prevent default context menu
+            app.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
         }
 
         // Toggle auto scroll
@@ -1005,7 +1187,6 @@
             state.autoScroll = !state.autoScroll;
             updateAutoScrollButton();
             
-            // If turning auto scroll back on, scroll to bottom
             if (state.autoScroll) {
                 scrollToBottom();
             }
@@ -1037,13 +1218,11 @@
         function handleManualScroll() {
             const isAtBottom = logContent.scrollHeight - logContent.scrollTop <= logContent.clientHeight + 1;
             
-            // If user manually scrolls away from bottom, turn off auto scroll
             if (!isAtBottom && state.autoScroll) {
                 state.autoScroll = false;
                 updateAutoScrollButton();
             }
             
-            // If user scrolls back to bottom and auto scroll was previously on, turn it back on
             if (isAtBottom && !state.autoScroll) {
                 state.autoScroll = true;
                 updateAutoScrollButton();
@@ -1053,19 +1232,10 @@
         // Scroll to bottom
         function scrollToBottom() {
             if (state.autoScroll) {
-                logContent.scrollTop = logContent.scrollHeight;
+                requestAnimationFrame(() => {
+                    logContent.scrollTop = logContent.scrollHeight;
+                });
             }
-        }
-
-        // Start auto test
-        function startAutoTest() {
-            if (state.autoTestInterval) {
-                clearInterval(state.autoTestInterval);
-            }
-            
-            state.autoTestInterval = setInterval(() => {
-                generateTestLog();
-            }, 2000);
         }
 
         // Update status display
@@ -1088,7 +1258,6 @@
             state.theme = state.theme === 'dark' ? 'light' : 'dark';
             document.body.classList.toggle('light-theme', state.theme === 'light');
             
-            // Update theme icon
             const icon = themeToggle.querySelector('svg');
             if (state.theme === 'light') {
                 icon.innerHTML = `
@@ -1107,7 +1276,6 @@
             state.minimized = !state.minimized;
             app.classList.toggle('minimized', state.minimized);
             
-            // Update minimize icon
             const icon = minimizeBtn.querySelector('svg');
             if (state.minimized) {
                 icon.innerHTML = `<path d="M5 12h14"/>`;
@@ -1129,12 +1297,10 @@
             tabs.forEach(t => {
                 t.classList.toggle('active', t.dataset.tab === tab);
             });
-            // Reset unread count for this tab
             state.unreadCounts[tab] = 0;
             updateBadges();
             displayLogs();
             
-            // When switching tabs, scroll to bottom if auto scroll is on
             if (state.autoScroll) {
                 setTimeout(() => {
                     scrollToBottom();
@@ -1192,13 +1358,31 @@
             
             switch(state.timeFilter) {
                 case '1min':
-                    timeLimit = 60 * 1000; // 1 minute in milliseconds
+                    timeLimit = 60 * 1000;
                     break;
                 case '5min':
-                    timeLimit = 5 * 60 * 1000; // 5 minutes
+                    timeLimit = 5 * 60 * 1000;
                     break;
                 case '10min':
-                    timeLimit = 10 * 60 * 1000; // 10 minutes
+                    timeLimit = 10 * 60 * 1000;
+                    break;
+                case '30min':
+                    timeLimit = 30 * 60 * 1000;
+                    break;
+                case '1hour':
+                    timeLimit = 60 * 60 * 1000;
+                    break;
+                case 'today':
+                    // Фильтр "сегодня" - с начала дня
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return logs.filter(log => new Date(log.timestamp) >= today);
+                case 'custom':
+                    if (state.timeFilterMinutes) {
+                        timeLimit = state.timeFilterMinutes * 60 * 1000;
+                    } else {
+                        return logs;
+                    }
                     break;
                 default:
                     return logs;
@@ -1217,12 +1401,11 @@
             const log = createLogEntry(data);
             state.logs.all.push(log);
             
-            // Map types to tabs
             const typeToTabMap = {
                 'RPC': 'rpc',
                 'EVENT': 'events',
                 'CALL': 'calls',
-                'REMOTE': 'calls', // REMOTE goes to CALL's tab
+                'REMOTE': 'calls',
                 'BROWSER': 'browser'
             };
             
@@ -1232,7 +1415,6 @@
                 state.logs[targetTab].push(log);
             }
             
-            // Update unread counts for inactive tabs
             if (state.currentTab !== 'all') {
                 state.unreadCounts.all++;
             }
@@ -1257,9 +1439,16 @@
                 second: '2-digit'
             });
             
-            const type = data.type || 'REMOTE';
-            const subtype = data.subtype || '';
+            const type = (data.type || 'REMOTE').toUpperCase();
+            const subtype = (data.subtype || '').toUpperCase();
             const text = data.text || '';
+            
+            // Получаем цвета из конфига
+            const typeLower = type.toLowerCase();
+            const subtypeLower = subtype.toLowerCase();
+            
+            const typeColor = state.config.colors[typeLower] || state.config.colors.remote;
+            const subtypeColor = state.config.colors.subtypes[subtypeLower] || state.config.colors.subtypes[''];
             
             const entry = {
                 time,
@@ -1267,7 +1456,9 @@
                 subtype,
                 text,
                 original: `[${time}] [${type}] [${subtype}] ${text}`,
-                timestamp: now.getTime()
+                timestamp: now.getTime(),
+                typeColor,
+                subtypeColor
             };
             
             return entry;
@@ -1284,13 +1475,10 @@
                 entry.dataset.index = index;
                 entry.dataset.timestamp = log.timestamp;
                 
-                // Determine subtype class
-                const subtypeClass = log.subtype ? `log-subtype-${log.subtype.toLowerCase()}` : 'log-subtype-empty';
-                
                 entry.innerHTML = `
                     <div class="log-time">${log.time}</div>
-                    <div class="log-type log-type-${log.type.toLowerCase()}">${log.type}</div>
-                    <div class="log-subtype ${subtypeClass}">${log.subtype || '—'}</div>
+                    <div class="log-type" style="background: ${log.typeColor.bg}; border-color: ${log.typeColor.border}; color: ${log.typeColor.text}">${log.type}</div>
+                    <div class="log-subtype" style="background: ${log.subtypeColor.bg}; border-color: ${log.subtypeColor.border}; color: ${log.subtypeColor.text}">${log.subtype || '—'}</div>
                     <div class="log-text">${log.text}</div>
                     <div class="log-actions">
                         <button class="log-action-btn" onclick="event.stopPropagation(); toggleContextMenu(event, ${index})">
@@ -1303,7 +1491,6 @@
                     </div>
                 `;
                 
-                // Double click to copy (only on log text area, not on buttons)
                 entry.addEventListener('dblclick', (e) => {
                     if (!e.target.closest('.log-action-btn')) {
                         copyLog(index);
@@ -1314,7 +1501,6 @@
                 logContent.appendChild(entry);
             });
             
-            // Auto scroll to bottom if enabled
             scrollToBottom();
         }
 
@@ -1339,39 +1525,50 @@
         // Toggle context menu
         function toggleContextMenu(event, index) {
             event.stopPropagation();
+            event.preventDefault();
             
             const button = event.target.closest('.log-action-btn');
             
-            if (state.contextMenuOpen && contextMenu.dataset.selectedIndex == index) {
+            if (state.contextMenuOpen && state.selectedLogIndex === index) {
                 hideContextMenu();
                 return;
             }
             
-            // Close any open menu
             hideContextMenu();
             
-            // Mark button as active
             button.classList.add('active');
             
-            // Get position for context menu
             const rect = button.getBoundingClientRect();
-            const x = rect.left;
-            const y = rect.bottom + 5;
+            let x = rect.left;
+            let y = rect.bottom + 5;
             
-            contextMenu.style.display = 'block';
+            // Проверка, чтобы контекстное меню не выходило за пределы окна
+            const menuWidth = contextMenu.offsetWidth;
+            const menuHeight = contextMenu.offsetHeight;
+            
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+            
+            if (y + menuHeight > window.innerHeight) {
+                y = rect.top - menuHeight - 5;
+            }
+            
             contextMenu.style.left = x + 'px';
             contextMenu.style.top = y + 'px';
+            contextMenu.classList.add('show');
             contextMenu.dataset.selectedIndex = index;
             
             state.contextMenuOpen = true;
+            state.selectedLogIndex = index;
         }
 
         // Hide context menu
         function hideContextMenu() {
-            contextMenu.style.display = 'none';
+            contextMenu.classList.remove('show');
             state.contextMenuOpen = false;
+            state.selectedLogIndex = null;
             
-            // Remove active class from all buttons
             document.querySelectorAll('.log-action-btn.active').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -1382,12 +1579,14 @@
             const idx = index !== undefined ? index : contextMenu.dataset.selectedIndex;
             const logs = getFilteredLogs();
             const log = logs[idx];
-            navigator.clipboard.writeText(log.original).then(() => {
-                hideContextMenu();
-                showNotification();
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-            });
+            if (log) {
+                navigator.clipboard.writeText(log.original).then(() => {
+                    hideContextMenu();
+                    showNotification();
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
         }
 
         // Send log
@@ -1395,10 +1594,11 @@
             const index = contextMenu.dataset.selectedIndex;
             const logs = getFilteredLogs();
             const log = logs[index];
-            // Implement send functionality here
-            console.log('Sending log:', log);
-            hideContextMenu();
-            alert('Log sent! (This is a demo)');
+            if (log) {
+                console.log('Sending log:', log);
+                hideContextMenu();
+                alert('Log sent! (This is a demo)');
+            }
         }
 
         // Save log
@@ -1406,14 +1606,16 @@
             const index = contextMenu.dataset.selectedIndex;
             const logs = getFilteredLogs();
             const log = logs[index];
-            const blob = new Blob([log.original], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `log_${Date.now()}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-            hideContextMenu();
+            if (log) {
+                const blob = new Blob([log.original], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `log_${Date.now()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                hideContextMenu();
+            }
         }
 
         // Show notification
@@ -1424,80 +1626,84 @@
             }, 2000);
         }
 
-        // Generate test log
-        function generateTestLog() {
-            if (!state.enabled) return;
+        // Set configuration from external code
+        function setConfig(newConfig) {
+            // Обновляем цвета типов
+            if (newConfig.typeColors) {
+                Object.keys(newConfig.typeColors).forEach(type => {
+                    const typeLower = type.toLowerCase();
+                    if (state.config.colors[typeLower]) {
+                        Object.assign(state.config.colors[typeLower], newConfig.typeColors[type]);
+                    } else {
+                        state.config.colors[typeLower] = newConfig.typeColors[type];
+                    }
+                });
+            }
             
-            const types = ['REMOTE', 'RPC', 'BROWSER', 'CALL', 'EVENT'];
-            const subtypes = ['', 'EXECUTE', 'CLIENT', 'SERVER', 'CALL', 'PROC'];
+            // Обновляем цвета подтипов
+            if (newConfig.subtypeColors) {
+                Object.keys(newConfig.subtypeColors).forEach(subtype => {
+                    const subtypeLower = subtype.toLowerCase();
+                    if (state.config.colors.subtypes[subtypeLower]) {
+                        Object.assign(state.config.colors.subtypes[subtypeLower], newConfig.subtypeColors[subtype]);
+                    } else {
+                        state.config.colors.subtypes[subtypeLower] = newConfig.subtypeColors[subtype];
+                    }
+                });
+            }
             
-            const type = types[Math.floor(Math.random() * types.length)];
-            const subtype = subtypes[Math.floor(Math.random() * subtypes.length)];
+            // Обновляем другие настройки
+            if (newConfig.enabled !== undefined) {
+                state.enabled = newConfig.enabled;
+                updateStatus();
+            }
             
-            const messages = {
-                'REMOTE': [
-                    'Player connected: John_Doe (ID: 123)',
-                    'Player disconnected: Mike (ID: 456)',
-                    'Vehicle spawned: police1 at position x: 120, y: 240, z: 30',
-                    'Character saved: Slot 2 (Playtime: 45h 30m)',
-                    'Admin command: /tp 123 456 789 (Used by Admin_John)'
-                ],
-                'RPC': [
-                    'Bank transaction: Withdraw $500 from account #12345',
-                    'House purchased: 1234 Vinewood Blvd for $250,000',
-                    'Inventory updated: Added 5x Medkit, 2x Armor',
-                    'Money transfer: $1000 from Player1 to Player2',
-                    'Job completed: Delivery (Reward: $750)'
-                ],
-                'BROWSER': [
-                    'Browser loaded: https://bank.gta5rp.com/login',
-                    'JavaScript executed: updateBalance()',
-                    'Page navigation: /dashboard -> /inventory',
-                    'Resource loaded: script.js (Size: 45KB)',
-                    'Browser closed: banking application'
-                ],
-                'CALL': [
-                    'Native call: GET_PLAYER_PED (PlayerID: 123)',
-                    'Native call: GET_VEHICLE_ENGINE_HEALTH (Vehicle: police1)',
-                    'Function call: calculateDamage(weapon: pistol, distance: 15m)',
-                    'Procedure call: updateInventory(playerID: 123)',
-                    'Callback: onPlayerDeath(player: 123, killer: 456)'
-                ],
-                'EVENT': [
-                    'Police arrested player: Mike (Wanted level: 3)',
-                    'Phone call started: Number: 555-1234, Duration: 2:30',
-                    'Weather changed: Rain intensity: 0.8, Wind: 15 mph',
-                    'Mission started: Heist: Pacific Standard',
-                    'Chat message: [John_Doe]: Anyone want to team up?',
-                    'Weapon equipped: weapon_assaultrifle (Ammo: 240)',
-                    'Clothing changed: Outfit #3 (Premium)',
-                    'Vehicle modified: Added turbo, upgraded engine',
-                    'Property entered: 24/7 Store (ID: 45)',
-                    'Radio changed: Station: Los Santos Rock Radio'
-                ]
-            };
+            if (newConfig.theme) {
+                state.theme = newConfig.theme;
+                document.body.classList.toggle('light-theme', state.theme === 'light');
+            }
             
-            const text = messages[type][Math.floor(Math.random() * messages[type].length)];
-            
-            addLog({
-                type: type,
-                subtype: subtype,
-                text: text
-            });
+            console.log('Config updated:', state.config);
         }
 
-        // Generate sample logs for demonstration
-        function generateSampleLogs() {
-            // Add a few sample logs initially
-            for (let i = 0; i < 3; i++) {
-                setTimeout(() => {
-                    generateTestLog();
-                }, i * 100);
+        // Установка фильтра времени из JS
+        function setTimeFilter(value, label) {
+            state.timeFilter = value;
+            
+            if (label) {
+                timeFilterLabel.textContent = label;
+            } else {
+                // Автоматически определяем label
+                const option = Array.from(timeFilterOptions).find(opt => opt.dataset.value === value);
+                if (option) {
+                    timeFilterLabel.textContent = option.textContent;
+                }
+            }
+            
+            displayLogs();
+        }
+
+        // Установка кастомного времени в минутах
+        function setCustomTime(minutes) {
+            if (minutes && minutes > 0 && minutes <= 1440) {
+                state.timeFilter = 'custom';
+                state.timeFilterMinutes = minutes;
+                timeFilterLabel.textContent = `Last ${minutes} min`;
+                displayLogs();
             }
         }
 
         // Initialize on load
         window.addEventListener('load', init);
+        
+        // Экспортируем функции для внешнего использования
+        window.addLog = addLog;
+        window.setConfig = setConfig;
+        window.setTimeFilter = setTimeFilter;
+        window.setCustomTime = setCustomTime;
+        window.clearLogs = clearLogs;
+        window.toggleEnabled = toggleEnabled;
+        window.getState = () => ({ ...state });
     </script>
 </body>
 </html>
